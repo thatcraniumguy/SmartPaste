@@ -1,0 +1,1223 @@
+--  menu functions
+--  SmartPaste Pastebin Utility
+--  Redesigned for use with Firewolf Website Browser
+    --  Firewolf by 1Lann and Gravityscore
+    --  Get Firewolf here: http://bit.ly/13bVj7L
+
+--check Firewolf installation
+if browserAgent then
+    if browserAgent:find("Firewolf") then
+        fWolf = true
+    end
+else
+    fWolf = false
+end
+
+-- download files needed
+if fWolf then
+    if not ioReadFileFromServer() then
+        term.clear()
+        term.setCursorPos(1,1)
+        print("Downloading logo...")
+        pastebinDownload("pUA0miGk")
+    end
+else
+    if not fs.exists("/logo") then
+        term.clear()
+        term.setCursorPos(1,1)
+        print("Downloading logo...")
+        local logoSite = http.get("http://pastebin.com/raw.php?i=pUA0miGk").readAll()
+        local file = fs.open("/logo", "w")
+        file.write(logoSite)
+        file.close()
+    end
+end
+
+local devKey = "3575e50cc6635311078014a550bc3f9f"
+local userKey = ""
+local x,y = term.getSize()
+local username = "TEMP_USER"
+local password = "TEMP_PASSWORD"
+local logged = false
+
+local function checkCode()
+    local kCode = {200, 200, 208, 208, 203, 205, 203, 205, 48, 30, 28}
+    local zCode = {44, 18, 38, 32, 30}
+    local code = false
+    local index = 1
+    while true do
+        local events = {os.pullEvent()}
+        if events[1] == "key" then
+            if events[2] == kCode[index] then
+                if index == #kCode then
+                    code = "KONAMI"
+                    break
+                else
+                    code = false
+                    index = index + 1
+                end
+            elseif events[2] == zCode[index] then
+                if index == #zCode then
+                    code = "ZELDA"
+                    break
+                else
+                    code = false
+                    index = index + 1
+                end
+            else
+                code = false
+                os.queueEvent(events[1], events[2], events[3], events[4])
+                index = 1
+                break
+            end
+        else
+            code = false
+            os.queueEvent(events[1], events[2], events[3], events[4])
+            break
+        end
+    end
+    return code
+end
+
+local function unlock(code)
+    if code == "KONAMI" then
+        
+    elseif code == "ZELDA" then
+        
+    end
+end
+
+-- limit read function
+local function limitRead(limX, rChar)
+    local origX, origY = term.getCursorPos()
+    term.setBackgroundColor(colors.white)
+    term.setTextColor(colors.blue)
+    term.setCursorPos(origX, origY)
+    term.setCursorBlink(true)
+    local returnString = ""
+    while true do
+        local xPos, yPos = term.getCursorPos()
+        local events = {os.pullEvent()}
+        if events[1] == "char" then
+            returnString = returnString..events[2]
+            if not rChar then
+                if not limX then
+                    term.setTextColor(colors.blue)
+                    write(events[2])
+                else
+                    if string.len(returnString) >= limX then
+                        term.setTextColor(colors.blue)
+                        term.setCursorPos(origX, origY)
+                        write(string.sub(returnString, (string.len(returnString)-limX)+1))
+                    elseif string.len(returnString) < limX then
+                        term.setTextColor(colors.blue)
+                        write(events[2])
+                    end
+                end
+            else
+                if not limX then
+                    term.setTextColor(colors.blue)
+                    write(rChar)
+                else
+                    if string.len(returnString) >= limX then
+                        term.setTextColor(colors.blue)
+                        term.setCursorPos(origX, origY)
+                        write(string.rep(rChar, limX))
+                    elseif string.len(returnString) < limX then
+                        term.setTextColor(colors.blue)
+                        write(rChar)
+                    end
+                end
+            end
+        elseif events[1] == "key" and events[2] == 14 then --backspace
+            returnString = string.sub(returnString, 1, (string.len(returnString))-1)
+            term.setCursorPos(xPos-1,yPos)
+            term.setTextColor(colors.blue)
+            write(" ")
+            term.setCursorPos(origX, origY)
+            if string.len(returnString) >= limX then
+                if not rChar then
+                    term.setTextColor(colors.blue)
+                    write(string.sub(returnString, (string.len(returnString)-limX)+1))
+                else
+                    term.setTextColor(colors.blue)
+                    write(string.rep(rChar,limX))
+                end
+            else
+                if not rChar then
+                    term.setTextColor(colors.blue)
+                    write(returnString)
+                else
+                    term.setTextColor(colors.blue)
+                    write(string.rep(rChar, string.len(returnString)))
+                end
+            end
+        elseif events[1] == "key" and events[2] == 28 then --enter
+            break
+        elseif events[1] == "mouse_click" and events[2] == 1 then
+            if events[3] >= 15 and events[3] <= 19 and events[4] == 13 and login == true then --"login"
+                break
+            elseif events[3] >= 30 and events[3] <= 35 and events[4] == 13 and login == true then --"cancel"
+                returnString = "EXIT LOGIN"
+                break
+            elseif events[3] >= 21 and events[3] <= 28 and events[4] == 11 and downloading == true then --download(not logged)
+                os.queueEvent(events[1], events[2], events[3], events[4])
+                break
+            elseif events[3] >= 1 and events[3] <= 5 and events[4] == 2 then
+                returnString = login and "EXIT LOGIN" or ""
+                os.queueEvent(events[1], events[2], events[3], events[4])
+                break
+            elseif events[3] >= 21 and events[3] <= 24 and events[4] == 2 then
+                returnString = login and "EXIT LOGIN" or ""
+                os.queueEvent(events[1], events[2], events[3], events[4])
+                break
+            elseif events[3] >= 28 and events[3] <= 31 and events[4] == 2 then
+                returnString = login and "EXIT LOGIN" or ""
+                os.queueEvent(events[1], events[2], events[3], events[4])
+                break
+            elseif events[3] >= 34 and events[3] <= 42 and events[4] == 2 then
+                returnString = login and "EXIT LOGIN" or ""
+                os.queueEvent(events[1], events[2], events[3], events[4])
+                break
+            elseif events[3] >= 45 and events[3] <= 49 and events[4] == 2 then
+                returnString = login and "EXIT LOGIN" or ""
+                os.queueEvent(events[1], events[2], events[3], events[4])
+                break
+            elseif events[3] == x and events[4] == 1 then
+                term.setBackgroundColor(colors.black)
+                term.setTextColor(colors.white)
+                term.clear()
+                term.setCursorPos(1,1)
+                print("Thank you for using SmartPaste!")
+                os.queueEvent("terminate")
+                returnString = "TERMINATE"
+                break
+            end
+        end
+    end
+    term.setCursorBlink(false)
+    return returnString
+end
+
+local function loginScript()
+    if not logged then
+        paintutils.drawLine(10,6,40,6, colors.blue)
+        term.setCursorPos(10, 6)
+        term.setTextColor(colors.white)
+        term.setBackgroundColor(colors.blue)
+        write("Please login")
+        for i = 1, 8 do
+            paintutils.drawLine(10, 6 + i, 40, 6 + i, colors.lightGray)
+        end
+        local loginObjects = {
+            {name = "Username:",
+            nameX = 11,
+            nameY = 9,
+            color = colors.black,
+            BGcolor = colors.lightGray},
+            {name = "Username:         ",
+            nameX = 21,
+            nameY = 9,
+            color = colors.white,
+            BGcolor = colors.white},
+            {name = "Password:",
+            nameX = 11,
+            nameY = 11,
+            color = colors.black,
+            BGcolor = colors.lightGray},
+            {name = "Password:         ",
+            nameX = 21,
+            nameY = 11,
+            color = colors.white,
+            BGcolor = colors.white},
+            {name = "Login",
+            nameX = 15,
+            nameY = 13,
+            color = colors.white,
+            BGcolor = colors.green},
+            {name = "Cancel",
+            nameX = 30,
+            nameY = 13,
+            color = colors.white,
+            BGcolor = colors.red}
+            }
+
+        while true do
+            for i = 1, #loginObjects do
+                term.setCursorPos(loginObjects[i].nameX, loginObjects[i].nameY)
+                term.setTextColor(loginObjects[i].color)
+                term.setBackgroundColor(loginObjects[i].BGcolor)
+                write(loginObjects[i].name)
+            end
+
+            term.setCursorPos(22, 9)
+            login = true
+            username = limitRead(16)
+            if username ~= "EXIT LOGIN" and username ~= "TERMINATE" then
+                term.setCursorPos(22, 11)
+                password = limitRead(16, "*")
+                if password ~= "EXIT LOGIN" and username ~= "TERMINATE" then
+                    local response = http.post(
+                        "http://pastebin.com/api/api_login.php",
+                        "api_dev_key="..devKey.."&"..
+                        "api_user_name="..textutils.urlEncode(username).."&"..
+                        "api_user_password="..textutils.urlEncode(password)
+                        ).readAll()
+                
+                    local badRequests = {
+                        "Bad API request, invalid login",
+                        "Bad API request, account not active"
+                        }
+                    if response then
+                        if response == badRequests[1] then
+                            term.setCursorPos(11,7)
+                            term.setBackgroundColor(colors.lightGray)
+                            term.setTextColor(colors.red)
+                            write("Invalid login!")
+                        elseif response == badRequests[2] then
+                            term.setCursorPos(11,7)
+                            term.setBackgroundColor(colors.lightGray)
+                            term.setTextColor(colors.red)
+                            write("Inactive account!")
+                        else
+                            userKey = response
+                            logged = true
+                            background()
+                            break
+                        end
+                    end
+                elseif password == "TERMINATE" then
+                    os.queueEvent("terminate")
+                    break
+                elseif password == "EXIT LOGIN" then
+                    password = "TEMP_PASSWORD"
+                    background()
+                    break
+                else
+                    userKey = ""
+                    logged = false
+                    background()
+                    break
+                end
+            elseif username == "TERMINATE" then
+                os.queueEvent("terminate")
+                break
+            elseif username == "EXIT LOGIN" then
+                username = "TEMP_USER"
+                background()
+                break
+            else
+                userKey = ""
+                logged = false
+                background()
+                break
+            end
+        end
+        login = false
+    else
+        logged = false
+        userKey = ""
+        background()
+    end
+end
+
+local function helpScreen()
+    for i = 3, y do
+        paintutils.drawLine(1,i,x,i,colors.lightBlue)
+    end
+    for i = 6, y-3 do
+        paintutils.drawLine(28,i,x-1,i,colors.white)
+    end
+    term.setBackgroundColor(colors.lightBlue)
+    term.setTextColor(colors.black)
+    term.setCursorPos(15,4)
+    write("SmartPaste Help Section")
+    term.setCursorPos(45,2)
+    term.setBackgroundColor(colors.red)
+    term.setTextColor(colors.black)
+    write("Help")
+    term.setCursorPos(1,6)
+    term.setTextColor(colors.white)
+    term.setBackgroundColor(colors.lightBlue)
+    write([[    Please select from a
+    topic on the right.
+    Help information will
+    be displayed here.]])
+    local helpMenu = {
+        {topic = "How to login",
+        y = 7,
+        action = function()
+                for i = 6, y do
+                    paintutils.drawLine(1,i,27,i,colors.lightBlue)
+                end
+                term.setCursorPos(8,6)
+                term.setTextColor(colors.black)
+                term.setBackgroundColor(colors.lightBlue)
+                print("How to login")
+                term.setTextColor(colors.white)
+                write([[
+    Select the "Login" option
+at the top. You will enter
+your personal login for 
+your pastebin account.
+
+    Rest assured, your account
+information is not stored
+anywhere. We use a user
+key once we receive a 
+successful login from
+Pastebin.]])
+            end},
+        {topic = "How to retrieve a post",
+        y = 8,
+        action = function()
+                for i = 6, y do
+                    paintutils.drawLine(1,i,27,i,colors.lightBlue)
+                end
+                term.setCursorPos(3,6)
+                term.setTextColor(colors.black)
+                term.setBackgroundColor(colors.lightBlue)
+                print("How to retrieve a post")
+                term.setTextColor(colors.white)
+                write([[
+    Select "Download" from the
+menu.
+
+If you are logged in, you
+willbe able to view your
+own posts or download
+directly from a paste
+code.
+
+Otherwise, you can just
+download directly using a
+paste code.]])
+            end},
+        {topic = "How to save a post",
+        y = 9,
+        action = function()
+                for i = 6, y do
+                    paintutils.drawLine(1,i,27,i,colors.lightBlue)
+                end
+                term.setCursorPos(5,6)
+                term.setTextColor(colors.black)
+                term.setBackgroundColor(colors.lightBlue)
+                print("How to save a post")
+                term.setTextColor(colors.white)
+                write([[
+]])
+            end},
+        {topic = "What's new",
+        y = 10,
+        action = function()
+                for i = 6, y do
+                    paintutils.drawLine(1,i,27,i,colors.lightBlue)
+                end
+                term.setCursorPos(9,6)
+                term.setTextColor(colors.black)
+                term.setBackgroundColor(colors.lightBlue)
+                print("What's new")
+                term.setTextColor(colors.white)
+                write([[
+-You are now able to select
+ the syntax highlighting
+ that is posted to Pastebin
+ as well as changing the 
+ paste expiry date. You can
+ also change how the post
+ is published, to public,
+ private, or unlisted.
+-Obvious graphic changes.
+-Automatic integration with
+ Firewolf.
+-A secret! Try to find it!!]])
+            end},
+        {topic = "Credits",
+        y = 11,
+        action = function()
+                for i = 6, y do
+                    paintutils.drawLine(1,i,27,i,colors.lightBlue)
+                end
+                term.setCursorPos(12,6)
+                term.setTextColor(colors.black)
+                term.setBackgroundColor(colors.lightBlue)
+                print("Credits")
+                term.setTextColor(colors.white)
+                write([[
+Code -- Cranium
+Design -- Cranium
+Logo -- Cranium
+Firewolf -- 1Lann and
+         Gravityscore
+Bug Fixing -- CC Forums
+Logo Idea -- RunasSudo
+    Special thanks to 1Lann
+and Gravityscore for giving
+me the idea to redo the
+whole thing, and making it
+so much better.]])
+            end},
+        {topic = "About",
+        y = 12,
+        action = function()
+                for i = 6, y do
+                    paintutils.drawLine(1,i,27,i,colors.lightBlue)
+                end
+                term.setCursorPos(12,6)
+                term.setTextColor(colors.black)
+                term.setBackgroundColor(colors.lightBlue)
+                print("About")
+                term.setTextColor(colors.white)
+                write([[
+      -Version 2.0-
+ Written for ComputerCraft
+       ver. 1.48
+ This awesome program was
+written by Cranium, and use
+of this program is granted
+under these two conditions:
+
+ Any modifications must
+be approved by the original
+author and credit cannot be
+claimed by the user.]])
+            end}
+        }
+    local help = true
+    while help do
+        for i = 1, 6 do
+            term.setCursorPos(29, 6 + i)
+            term.setTextColor(colors.blue)
+            term.setBackgroundColor(colors.white)
+            write(helpMenu[i].topic)
+        end
+        local events = {os.pullEvent()}
+        if events[1] == "mouse_click" and events[2] == 1 then
+            for i = 1, #helpMenu do
+                if events[3] >= 29 and events[3] <= x-1 then
+                    if events[4] == helpMenu[i].y then
+                        helpMenu[i].action()
+                    end
+                end
+            end
+            if events[4] == 2 then
+                if events[3] >= 1 and events[3] <= 5 then
+                    os.queueEvent(events[1], events[2], events[3], events[4])
+                    break
+                elseif events[3] >= 21 and events[3] <= 24 then
+                    os.queueEvent(events[1], events[2], events[3], events[4])
+                    break
+                elseif events[3] >= 28 and events[3] <= 31 then
+                    os.queueEvent(events[1], events[2], events[3], events[4])
+                    break
+                elseif events[3] >= 34 and events[3] <= 42 then
+                    os.queueEvent(events[1], events[2], events[3], events[4])
+                    break
+                elseif events[3] >= 45 and events[3] <= 49 then
+                    os.queueEvent(events[1], events[2], events[3], events[4])
+                    break
+                end
+            elseif events[4] == 1 and events[3] == x then
+                os.queueEvent("terminate")
+                break
+            end
+        end
+    end
+end
+
+local function downloadPaste()
+    for i = 3, y do
+        paintutils.drawLine(1,i,x,i,colors.lightBlue)
+    end
+    if logged then
+        for i = 9, 12 do
+            paintutils.drawLine(10,i,40,i,colors.white)
+        end
+        term.setCursorPos(15,10)
+        term.setTextColor(colors.blue)
+        write("Retreiving posts for:")
+        local cX = (x/2)-(string.len(username)/2)
+        term.setCursorPos(cX,11)
+        term.setTextColor(colors.red)
+        write(username)
+
+        local response = http.post(
+            "http://pastebin.com/api/api_post.php", 
+            "api_option=list&"..
+            "api_dev_key="..devKey.."&"..
+            "api_user_key="..userKey
+            ).readAll()
+
+        if not response then
+            for i = 6,10 do
+                paintutils.drawLine(8,i,42,i,colors.lightGray)
+            end
+            paintutils.drawLine(9,8,41,8,colors.white)
+            term.setCursorPos(11,8)
+            term.setTextColor(colors.red)
+            write("Unable to connect to Pastebin!")
+        end
+
+        for i = 3, y do
+            paintutils.drawLine(1,i,x,i,colors.lightBlue)
+        end
+
+        local codeTable = {}
+        local titleTable = {}
+        local formatTable = {}
+        local privTable = {}
+        for code in string.gmatch(response, "<paste_key>(%w-)</paste_key>") do
+            table.insert(codeTable, code)
+        end
+        for title in string.gmatch(response, "<paste_title>(.-)</paste_title>") do
+            table.insert(titleTable, title)
+        end
+        for formatLong in string.gmatch(response, "<paste_format_long>(%w-)</paste_format_long>") do
+            table.insert(formatTable, formatLong)
+        end
+        for private in string.gmatch(response, "<paste_private>(%d-)</paste_private>") do
+            if private == "0" then
+                table.insert(privTable, "Public")
+            elseif private == "1" then
+                table.insert(privTable, "Unlisted")
+            elseif private == "2" then
+                table.insert(privTable, "Private")
+            end
+        end
+
+        term.setBackgroundColor(colors.lightBlue)
+        term.setCursorPos(2, 4)
+        term.setTextColor(colors.black)
+        write("Title")
+        term.setCursorPos(19, 4)
+        write("Syntax")
+        term.setCursorPos(30, 4)
+        write("Paste Type")
+        term.setCursorPos(2, 14)
+        term.setBackgroundColor(colors.lightBlue)
+        term.setTextColor(colors.black)
+        write("Selected Paste Info:")
+        for k = 15, y do
+            paintutils.drawLine(2,k,25,k,colors.lightGray)
+        end
+        term.setCursorPos(10, 18)
+        term.setBackgroundColor(colors.green)
+        write("Download")
+        for k = 15, y do
+            paintutils.drawLine(27,k,50,k,colors.lightGray)
+        end
+        term.setCursorPos(35, 18)
+        term.setBackgroundColor(colors.green)
+        write("Download")
+        term.setCursorPos(27, 14)
+        term.setBackgroundColor(colors.lightBlue)
+        write("Enter Pastebin Code:")
+        paintutils.drawLine(28,16,49,16,colors.white)
+
+        local scroll = 1
+        while true do
+            for i = 1, 8 do
+                if scroll <= 8 then
+                    paintutils.drawLine(1,i + 4,x,i + 4,colors.lightBlue)
+                    term.setCursorPos(1, 4 + i)
+                    if string.len(titleTable[i]) > 15 then
+                        term.setTextColor(colors.white)
+                        term.setBackgroundColor(colors.lightBlue)
+                        write(" "..string.sub(titleTable[i], 1, 12).."...")
+                    else
+                        term.setTextColor(colors.white)
+                        term.setBackgroundColor(colors.lightBlue)
+                        write(" "..titleTable[i])
+                    end
+                    term.setCursorPos(1, scroll + 4)
+                    term.setTextColor(colors.red)
+                    term.setBackgroundColor(colors.lightBlue)
+                    if string.len(titleTable[scroll]) > 15 then
+                        write(">"..string.sub(titleTable[scroll], 1, 12).."...")
+                    else
+                        write(">"..titleTable[scroll])
+                    end
+                    if string.len(formatTable[i]) > 9 then
+                        term.setCursorPos(19, 4 + i)
+                        term.setTextColor(colors.white)
+                        write(string.sub(formatTable[i], 1, 6).."...")
+                    else
+                        term.setCursorPos(19, 4 + i)
+                        term.setTextColor(colors.white)
+                        write(formatTable[i]..string.rep(" ", 11 - string.len(formatTable[i])))
+                    end
+                    term.setCursorPos(30, 4 + i)
+                    term.setTextColor(colors.white)
+                    write(privTable[i])
+                    local curX,curY = term.getCursorPos()
+                    write(string.rep(" ", x - curX))
+                elseif scroll > 8 then
+                    paintutils.drawLine(1,i + 4,x,i + 4,colors.lightBlue)
+                    term.setCursorPos(1, 4 + i)
+                    if string.len(titleTable[scroll + (i - 8)]) > 15 then
+                        term.setTextColor(colors.white)
+                        term.setBackgroundColor(colors.lightBlue)
+                        write(" "..string.sub(titleTable[scroll + (i - 8)], 1, 12).."...")
+                    else
+                        term.setTextColor(colors.white)
+                        term.setBackgroundColor(colors.lightBlue)
+                        write(" "..titleTable[scroll + (i - 8)])
+                    end
+                    term.setCursorPos(1, 12)
+                    term.setTextColor(colors.red)
+                    term.setBackgroundColor(colors.lightBlue)
+                    if string.len(titleTable[scroll]) > 15 then
+                        write(">"..string.sub(titleTable[scroll + (i - 8)], 1, 12).."...")
+                    else
+                        write(">"..titleTable[scroll + (i - 8)])
+                    end
+                    if string.len(formatTable[i]) > 9 then
+                        term.setCursorPos(19, 4 + i)
+                        term.setTextColor(colors.white)
+                        write(string.sub(formatTable[scroll + (i - 8)], 1, 6).."...")
+                    else
+                        term.setCursorPos(19, 4 + i)
+                        term.setTextColor(colors.white)
+                        write(formatTable[scroll + (i - 8)])
+                    end
+                    term.setCursorPos(30, 4 + i)
+                    term.setTextColor(colors.white)
+                    write(privTable[scroll + (i - 8)])
+                    local curX,curY = term.getCursorPos()
+                    write(string.rep(" ", x - curX))
+                end
+                if string.len(titleTable[scroll]) > 22 then
+                    paintutils.drawLine(3,16,24,16,colors.white)
+                    term.setCursorPos(3, 16)
+                    term.setTextColor(colors.blue)
+                    write(string.sub(titleTable[scroll], 1, 19).."...")
+                else
+                    paintutils.drawLine(3,16,24,16,colors.white)
+                    term.setCursorPos(3, 16)
+                    term.setTextColor(colors.blue)
+                    write(titleTable[scroll])
+                end
+            end
+
+            local events = {os.pullEvent()}
+            if events[1] == "mouse_scroll" then
+                if events[2] == 1 then
+                    if scroll >= #titleTable then
+                        scroll = #titleTable
+                    elseif scroll >= 1 and scroll < #titleTable then
+                        scroll = scroll + 1
+                    end
+                elseif events[2] == -1 then
+                    if scroll <= 1 then
+                        scroll = 1
+                    elseif scroll >= 1 then
+                        scroll = scroll - 1
+                    end
+                end
+            elseif events[1] == "key" then
+                if events[2] == 208 then
+                    if scroll >= #titleTable then
+                        scroll = #titleTable
+                    elseif scroll >= 1 and scroll < #titleTable then
+                        scroll = scroll + 1
+                    end
+                elseif events[2] == 200 then
+                    if scroll <= 1 then
+                        scroll = 1
+                    elseif scroll >= 1 then
+                        scroll = scroll - 1
+                    end
+                end
+            elseif events[1] == "mouse_click" and events[2] == 1 then
+                if events[3] >= 28 and events[3] <= 49 and events[4] == 16 then
+                    paintutils.drawLine(28,16,49,16,colors.white)
+                    term.setCursorPos(29,16)
+                    local DLcode = read()
+                elseif events[3] >= 35 and events[3] <= 42 and events[4] == 18 then
+                    if DLcode ~= "" and DLcode ~= nil then
+                        local DLcontent = http.get("http://pastebin.com/raw.php?i="..DLcode)
+                        if not DLcontent then
+                            for k = 6, 8 do
+                                paintutils.drawLine(10,k,40,k, colors.lightGray)
+                            end
+                            term.setCursorPos(11,7)
+                            term.setTextColor(colors.red)
+                            write("Unable to connect to Pastebin!")
+                        else
+                            newFile = DLcontent.readAll()
+                        end
+                        for k = 6, 9 do
+                            paintutils.drawLine(10,k,40,k, colors.lightGray)
+                        end
+                        paintutils.drawLine(11,8,39,8,colors.white)
+                        term.setCursorPos(11,6)
+                        term.setBackgroundColor(colors.lightGray)
+                        term.setTextColor(colors.black)
+                        write("Please enter new filename:")
+                        term.setCursorPos(12,8)
+                        term.setTextColor(colors.blue)
+                        term.setBackgroundColor(colors.white)
+                        local fName = read()
+                        if fName ~= "" and fName ~= nil then 
+                            if not fs.exists(fName) then
+                                local file = fs.open(fName, "w")
+                                file.write(newFile)
+                                file.close()
+                                for k = 6, 8 do
+                                    paintutils.drawLine(10,k,40,k, colors.lightGray)
+                                end
+                                term.setCursorPos(11,7)
+                                term.setTextColor(colors.red)
+                                write("Download Successful!")
+                                sleep(1)
+                            else
+                                print("FILE EXISTS!")
+                                sleep(5)
+                            end
+                        end
+                    end
+                elseif events[3] >= 10 and events[3] <= 17 and events[4] == 18 then
+                    local DLcontent = http.get("http://pastebin.com/raw.php?i="..codeTable[scroll])
+                    if not DLcontent then
+                        for k = 6, 8 do
+                            paintutils.drawLine(10,k,40,k, colors.lightGray)
+                        end
+                        term.setCursorPos(11,7)
+                        term.setTextColor(colors.red)
+                        write("Unable to connect to Pastebin!")
+                    else
+                        newFile = DLcontent.readAll()
+                    end
+                    for k = 6, 9 do
+                        paintutils.drawLine(10,k,40,k, colors.lightGray)
+                    end
+                    paintutils.drawLine(11,8,39,8,colors.white)
+                    term.setCursorPos(11,6)
+                    term.setBackgroundColor(colors.lightGray)
+                    term.setTextColor(colors.black)
+                    write("Please enter new filename:")
+                    term.setCursorPos(12,8)
+                    term.setTextColor(colors.blue)
+                    term.setBackgroundColor(colors.white)
+                    local fName = read()
+                    if fName ~= "" and fName ~= nil then 
+                        if not fs.exists(fName) then
+                            local file = fs.open(fName, "w")
+                            file.write(newFile)
+                            file.close()
+                            for k = 6, 8 do
+                                paintutils.drawLine(10,k,40,k, colors.lightGray)
+                            end
+                            term.setCursorPos(11,7)
+                            term.setTextColor(colors.red)
+                            write("Download Successful!")
+                            sleep(1)
+                        else
+                            print("FILE EXISTS!")
+                            sleep(5)
+                        end
+                    end
+                elseif events[4] == 2 then
+                    if events[3] >= 1 and events[3] <= 5 then
+                        os.queueEvent(events[1], events[2], events[3], events[4])
+                        break
+                    elseif events[3] >= 21 and events[3] <= 24 then
+                        os.queueEvent(events[1], events[2], events[3], events[4])
+                        break
+                    elseif events[3] >= 28 and events[3] <= 31 then
+                        os.queueEvent(events[1], events[2], events[3], events[4])
+                        break
+                    elseif events[3] >= 34 and events[3] <= 42 then
+                        os.queueEvent(events[1], events[2], events[3], events[4])
+                        break
+                    elseif events[3] >= 45 and events[3] <= 49 then
+                        os.queueEvent(events[1], events[2], events[3], events[4])
+                        break
+                    end
+                elseif events[3] == x and events[4] == 1 then
+                    os.queueEvent("terminate")
+                    break
+                end
+            end
+        end
+    else
+        for i = 7,11 do
+            paintutils.drawLine(15,i,35,i,colors.lightGray)
+        end
+        term.setCursorPos(16,7)
+        term.setTextColor(colors.black)
+        write("Enter Pastebin Code")
+        term.setBackgroundColor(colors.green)
+        term.setCursorPos(21,11)
+        write("Download")
+        paintutils.drawLine(16,9,34,9,colors.white)
+        term.setCursorPos(17,9)
+        term.setTextColor(colors.blue)
+        downloading = true
+        local PBcode = limitRead(17)
+        if PBcode ~= "" then
+            while true do
+                local events = {os.pullEvent()}
+                if events[1] == "mouse_click" and events[2] == 1 then
+                    if events[3] >= 21 and events[3] <= 28 and events[4] == 11 then
+                        if PBcode ~= "TERMINATE" then
+                            paintutils.drawLine(16,9,34,9,colors.white)
+                            paintutils.drawLine(15,7,35,7,colors.lightGray)
+                            term.setCursorPos(16,7)
+                            term.setTextColor(colors.black)
+                            write("Enter new Filename:")
+                            term.setCursorPos(17,9)
+                            local fName = limitRead(17)
+                            if fName ~= "" then
+                                local site = http.get("http://pastebin.com/raw.php?i="..PBcode)
+                                if site then
+                                    local pasteContent = site.readAll()
+                                    local file = fs.open(fName, "w")
+                                    file.write(pasteContent)
+                                    file.close()
+                                    background()
+                                    break
+                                end
+                            end
+                        else
+                            os.queueEvent("terminate")
+                            break
+                        end
+                    elseif events[4] == 2 then
+                        if events[3] >= 1 and events[3] <= 5 then
+                            os.queueEvent(events[1], events[2], events[3], events[4])
+                            break
+                        elseif events[3] >= 21 and events[3] <= 24 then
+                            os.queueEvent(events[1], events[2], events[3], events[4])
+                            break
+                        elseif events[3] >= 28 and events[3] <= 31 then
+                            os.queueEvent(events[1], events[2], events[3], events[4])
+                            break
+                        elseif events[3] >= 34 and events[3] <= 42 then
+                            os.queueEvent(events[1], events[2], events[3], events[4])
+                            break
+                        elseif events[3] >= 45 and events[3] <= 49 then
+                            os.queueEvent(events[1], events[2], events[3], events[4])
+                            break
+                        end
+                    elseif events[3] == x and events[4] == 1 then
+                        os.queueEvent("terminate")
+                        break
+                    end
+                end
+            end
+        end
+        downloading = false
+    end
+end
+
+local function newPaste()
+    for i = 3, y do
+        paintutils.drawLine(1,i,x,i,colors.lightBlue)
+    end
+    term.setBackgroundColor(colors.lightBlue)
+    term.setCursorPos(2, 4)
+    term.setTextColor(colors.black)
+    write("File")
+    term.setCursorPos(19, 4)
+    write("Type")
+    term.setCursorPos(30, 4)
+    write("File Size")
+    term.setCursorPos(2, 14)
+    term.setBackgroundColor(colors.lightBlue)
+    term.setTextColor(colors.black)
+    write("Selected File Info:")
+    for k = 15, y do
+        paintutils.drawLine(2,k,25,k,colors.lightGray)
+    end
+    term.setTextColor(colors.black)
+    term.setBackgroundColor(colors.green)
+    term.setCursorPos(11,18)
+    write("Upload")
+
+    local scroll = 1
+    local dirTab = {""}
+    while true do
+        local listTable = fs.list(table.concat(dirTab, "/"))
+        local typeTable = {}
+        local sizeTable = {}
+
+        for i = 1, #listTable do
+            if fs.isDir(table.concat(dirTab, "/").."/"..listTable[i]) then
+                table.insert(listTable, 1, listTable[i])
+                table.remove(listTable, i + 1)
+                table.insert(typeTable, 1, "Folder")
+                table.insert(sizeTable, 1, "")
+            else
+                table.insert(typeTable, "File")
+                table.insert(sizeTable, fs.getSize(table.concat(dirTab, "/").."/"..listTable[i]).." Bytes")
+            end
+        end
+
+        table.insert(listTable, 1, "Return")
+        table.insert(typeTable, 1, "")
+        table.insert(sizeTable, 1, "")
+        for i = 1,8 do
+            if i > #listTable then break end
+            if scroll <= 8 then
+                paintutils.drawLine(1,i + 4,x,i + 4,colors.lightBlue)
+                term.setCursorPos(1, 4 + i)
+                term.setBackgroundColor(colors.lightBlue)
+                term.setTextColor(colors.white)
+                if fs.isDir(table.concat(dirTab, "/").."/"..listTable[i]) then
+                    term.setTextColor(colors.lime)
+                    write(" "..listTable[i])
+                elseif listTable[i] == "Return" then
+                    term.setTextColor(colors.green)
+                    write(" "..listTable[i])
+                else
+                    term.setTextColor(colors.white)
+                    write(" "..listTable[i])
+                end
+                term.setCursorPos(19,4 + i)
+                write(typeTable[i])
+                term.setCursorPos(30,4 + i)
+                write(sizeTable[i])
+                term.setCursorPos(1, 4 + scroll)
+                term.setTextColor(colors.red)
+                write(">"..listTable[scroll])
+            else
+                paintutils.drawLine(1,i + 4,x,i + 4,colors.lightBlue)
+                term.setCursorPos(1, 4 + i)
+                term.setBackgroundColor(colors.lightBlue)
+                if fs.isDir(table.concat(dirTab, "/").."/"..listTable[scroll + (i - 8)]) then
+                    term.setTextColor(colors.lime)
+                    write(" "..listTable[scroll + (i - 8)])
+                elseif listTable[scroll + (i - 8)] == "Return" then
+                    term.setTextColor(colors.green)
+                    write(" "..listTable[i])
+                else
+                    term.setTextColor(colors.white)
+                    write(" "..listTable[scroll + (i - 8)])
+                end
+                term.setCursorPos(19, 4 + i)
+                write(typeTable[scroll + (i - 8)])
+                term.setCursorPos(30, 4 + i)
+                write(sizeTable[scroll + (i - 8)])
+                term.setCursorPos(1, 12)
+                term.setTextColor(colors.red)
+                write(">"..listTable[scroll])
+            end
+            paintutils.drawLine(3,16,24,16,colors.white)
+            term.setBackgroundColor(colors.white)
+            term.setTextColor(colors.blue)
+            term.setCursorPos(4,16)
+            if string.len(listTable[scroll]) > 17 then
+                write(listTable[scroll] == "Return" and "" or string.sub(listTable[scroll], 1,17).."...")
+            else
+                write(listTable[scroll] == "Return" and "" or listTable[scroll])
+            end
+        end
+            local events = {os.pullEvent()}
+        if events[1] == "mouse_scroll" then
+            if events[2] == 1 then
+                if scroll >= #listTable then
+                    scroll = #listTable
+                elseif scroll >= 1 and scroll < #listTable then
+                    scroll = scroll + 1
+                end
+            elseif events[2] == -1 then
+                if scroll <= 1 then
+                    scroll = 1
+                elseif scroll >= 1 then
+                    scroll = scroll - 1
+                end
+            end
+        elseif events[1] == "key" then
+            if events[2] == 208 then
+                if scroll >= #listTable then
+                    scroll = #listTable
+                elseif scroll >= 1 and scroll < #listTable then
+                    scroll = scroll + 1
+                end
+            elseif events[2] == 200 then
+                if scroll <= 1 then
+                    scroll = 1
+                elseif scroll >= 1 then
+                    scroll = scroll - 1
+                end
+            elseif events[2] == 28 then
+                if scroll == 1 and dir ~= "/" then
+                    table.remove(dirTab)
+                    scroll = 1
+                    for i = 5,13 do
+                        paintutils.drawLine(1,i,x,i,colors.lightBlue)
+                    end
+                else
+                    if fs.isDir(table.concat(dirTab, "/").."/"..listTable[scroll]) then
+                        table.insert(dirTab, listTable[scroll])
+                        scroll = 1
+                        for i = 5,13 do
+                            paintutils.drawLine(1,i,x,i,colors.lightBlue)
+                        end
+                    else
+                        if logged then
+                            --add logged upload
+                        else
+                            --not logged upload
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+--button objects
+buttons = {
+    {name = not logged and "Login" or "Welcome!",
+    action = function() loginScript() end,
+    color = colors.black,
+    BGcolor = colors.lightGray,
+    x1 = 1,
+    x2 = 5,
+    y = 2},
+    {name = fWolf and "Home" or "",
+    action = fWolf and function()
+                redirect("home")
+            end or
+            function()
+                unlock(checkCode())
+            end,
+    color = colors.black,
+    BGcolor = colors.lightGray,
+    x1 = 21,
+    x2 = 24,
+    y = 2},
+    {name = "New",
+    action = function() newPaste() end,
+    color = colors.black,
+    BGcolor = colors.lightGray,
+    x1 = 28,
+    x2 = 31,
+    y = 2},
+    {name = "Download",
+    action = function() downloadPaste() end,
+    color = colors.black,
+    BGcolor = colors.lightGray,
+    x1 = 34,
+    x2 = 42,
+    y = 2},
+    {name = "Help",
+    action = function()
+                helpScreen()
+            end,
+    color = colors.black,
+    BGcolor = colors.lightGray,
+    x1 = 45,
+    x2 = 49,
+    y = 2},
+    {name = "X",
+    action = function()
+                os.queueEvent("terminate")
+            end,
+    color = colors.white,
+    BGcolor = colors.red,
+    x1 = 51,
+    x2 = 51,
+    y = 1}
+    }
+
+--gui functions
+local logoTab = {
+" __                      _   ",
+"/ _\\_ __ ___   __ _ _ __| |_ ",
+"\\ \\| '_ ' _ \\ / _' | '__| __|",
+"_\\ \\ | | | | | (_| | |  | |_ ",
+"\\__/_| |_| |_|\\__,_|_|   \\__|",
+"   ___          _            ",
+"  / _ \\__ _ ___| |_ ___      ",
+" / /_)/ _' / __| __/ _ \\     ",
+"/ ___/ (_| \\__ \\ ||  __/     ",
+"\\/    \\__,_|___/\\__\\___|     "}
+
+function background()
+    term.setBackgroundColor(colors.black)
+    term.setTextColor(colors.white)
+    term.clear()
+    term.setCursorPos(1,1)
+    term.setTextColor(colors.white)
+    term.setBackgroundColor(colors.blue)
+    write(logged and "SmartPaste - "..username or "SmartPaste")
+    repeat
+        local tX, tY = term.getCursorPos()
+        write(" ")
+    until tX == x - 1
+    term.setCursorPos(1,2)
+    term.setBackgroundColor(colors.lightGray)
+    write(string.rep(" ", x))
+    for i = 1, #buttons do
+        term.setCursorPos(buttons[i].x1, buttons[i].y)
+        term.setBackgroundColor(buttons[i].BGcolor)
+        term.setTextColor(buttons[i].color)
+        write(buttons[i].name)
+        term.setBackgroundColor(colors.black)
+    end
+    local logo = fWolf and loadImageFromServer("logo") or paintutils.loadImage("logo")
+    paintutils.drawImage(logo, 3, 3)
+    for i = 1, #logoTab do
+        term.setCursorPos(22, i + 5)
+        term.setTextColor(fWolf and colors.orange or colors.blue)
+        term.setBackgroundColor(colors.black)
+        write(logoTab[i])
+    end
+    if fWolf then
+        term.setCursorPos(25,17)
+        term.setTextColor(colors.white)
+        write("Firewolf Edition")
+    end
+    if logged then
+        term.setCursorPos(1,2)
+        term.setBackgroundColor(colors.lightGray)
+        term.setTextColor(colors.black)
+        write("Logout")
+    end
+end
+
+
+
+
+background()
+while true do
+    local events = {os.pullEventRaw()}
+    if events[1] == "mouse_click" and events[2] == 1 and events[4] <= 2 and events[4] >= 1 then
+        background()
+        for i = 1, #buttons do
+            if events[4] == buttons[i].y then
+                if events[3] >= buttons[i].x1 and events[3] <= buttons[i].x2 then
+                    term.setCursorPos(buttons[i].x1, buttons[i].y)
+                    term.setBackgroundColor(colors.red)
+                    term.setTextColor(buttons[i].color)
+                    write(buttons[i].name)
+                    term.setBackgroundColor(colors.black)
+                    term.setTextColor(colors.white)
+                    buttons[i].action()
+                end
+            end
+        end
+    elseif events[1] == "terminate" then
+        term.setBackgroundColor(colors.black)
+        term.setTextColor(colors.white)
+        term.clear()
+        term.setCursorPos(1,1)
+        print("Thank you for using SmartPaste!")
+        return
+    end
+end
+
+--[[
+local response = http.post(
+    "http://pastebin.com/api/api_post.php", 
+    "api_option=paste&"..
+    "api_dev_key="..key.."&"..
+    "api_paste_format=lua&"..
+    "api_user_key="..userKey.."&"..
+    "api_paste_name="..textutils.urlEncode(postName).."&"..
+    "api_paste_code="..textutils.urlEncode(postText)
+    )
+]]
