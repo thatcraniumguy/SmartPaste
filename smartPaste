@@ -1,9 +1,3 @@
---  menu functions
---  SmartPaste Pastebin Utility
---  Redesigned for use with Firewolf Website Browser
-    --  Firewolf by 1Lann and Gravityscore
-    --  Get Firewolf here: http://bit.ly/13bVj7L
-
 --check Firewolf installation
 if browserAgent then
     if browserAgent:find("Firewolf") then
@@ -39,6 +33,122 @@ local x,y = term.getSize()
 local username = "TEMP_USER"
 local password = "TEMP_PASSWORD"
 local logged = false
+local syntaxTab = {
+    menuNames = {
+        '4CS',                  '6502 ACME Cross Assembler','6502 Kick Assembler',      '6502 TASM/64TASS',
+        'ABAP',                 'ActionScript',             'ActionScript 3',           'Ada',
+        'ALGOL 68',             'Apache Log',               'AppleScript',              'APT Sources',
+        'ARM',                  'ASM (NASM)',               'ASP',                      'Asymptote',
+        'autoconf',             'Autohotkey',               'AutoIt',                   'Avisynth',
+        'Awk',                  'BASCOM AVR',               'Bash',                     'Basic4GL',
+        'BibTeX',               'Blitz Basic',              'BNF',                      'BOO',
+        'BrainFuck',            'C',                        'C for Macs',               'C Intermediate Language',
+        'C#',                   'C++',                      'C++ (with QT extensions)', 'C: Loadrunner',
+        'CAD DCL',              'CAD Lisp',                 'CFDG',                     'ChaiScript',
+        'Clojure',              'Clone C',                  'Clone C++',                'CMake',
+        'COBOL',                'CoffeeScript',             'ColdFusion',               'CSS',
+        'Cuesheet',             'D',                        'DCL',                      'DCPU-16',
+        'DCS',                  'Delphi',                   'Delphi Prism (Oxygene)',   'Diff',
+        'DIV',                  'DOS',                      'DOT',                      'E',
+        'ECMAScript',           'Eiffel',                   'Email',                    'EPC',
+        'Erlang',               'F#',                       'Falcon',                   'FO Language',
+        'Formula One',          'Fortran',                  'FreeBasic',                'FreeSWITCH',
+        'GAMBAS',               'Game Maker',               'GDB',                      'Genero',
+        'Genie',                'GetText',                  'Go',                       'Groovy',
+        'GwBasic',              'Haskell',                  'Haxe',                     'HicEst',
+        'HQ9 Plus',             'HTML',                     'HTML 5',                   'Icon',
+        'IDL',                  'INI file',                 'Inno Script',              'INTERCAL',
+        'IO',                   'J',                        'Java',                     'Java 5',
+        'JavaScript',           'jQuery',                   'KiXtart',                  'Latex',
+        'LDIF',                 'Liberty BASIC',            'Linden Scripting',         'Lisp',
+        'LLVM',                 'Loco Basic',               'Logtalk',                  'LOL Code',
+        'Lotus Formulas',       'Lotus Script',             'LScript',                  'Lua',
+        'M68000 Assembler',     'MagikSF',                  'Make',                     'MapBasic',
+        'MatLab',               'mIRC',                     'MIX Assembler',            'Modula 2',
+        'Modula 3',             'Motorola 68000 HiSoft Dev','MPASM',                    'MXML',
+        'MySQL',                'Nagios',                   'newLISP',                  'None',
+        'NullSoft Installer',   'Oberon 2',                 'Objeck Programming Langua','Objective C',
+        'OCalm Brief',          'OCaml',                    'Octave',                   'OpenBSD PACKET FILTER',
+        'OpenGL Shading',       'Openoffice BASIC',         'Oracle 11',                'Oracle 8',
+        'Oz',                   'ParaSail',                 'PARI/GP',                  'Pascal',
+        'PAWN',                 'PCRE',                     'Per',                      'Perl',
+        'Perl 6',               'PHP',                      'PHP Brief',                'Pic 16',
+        'Pike',                 'Pixel Bender',             'PL/SQL',                   'PostgreSQL',
+        'POV-Ray',              'Power Shell',              'PowerBuilder',             'ProFTPd',
+        'Progress',             'Prolog',                   'Properties',               'ProvideX',
+        'PureBasic',            'PyCon',                    'Python',                   'Python for S60',
+        'q/kdb+',               'QBasic',                   'R',                        'Rails',
+        'REBOL',                'REG',                      'Rexx',                     'Robots',
+        'RPM Spec',             'Ruby',                     'Ruby Gnuplot',             'SAS',
+        'Scala',                'Scheme',                   'Scilab',                   'SdlBasic',
+        'Smalltalk',            'Smarty',                   'SPARK',                    'SPARQL',
+        'SQL',                  'StoneScript',              'SystemVerilog',            'T-SQL',
+        'TCL',                  'Tera Term',                'thinBasic',                'TypoScript',
+        'Unicon',               'UnrealScript',             'UPC',                      'Urbi',
+        'Vala',                 'VB.NET',                   'Vedit',                    'VeriLog',
+        'VHDL',                 'VIM',                      'Visual Pro Log',           'VisualBasic',
+        'VisualFoxPro',         'WhiteSpace',               'WHOIS',                    'Winbatch',
+        'XBasic',               'XML',                      'Xorg Config',              'XPP',
+        'YAML',                 'Z80 Assembler',            'ZXBasic'
+        },
+    urlCodes = {
+        '4cs',                  '6502acme',                 '6502kickass',              '6502tasm',
+        'abap',                 'actionscript',             'actionscript3',            'ada',
+        'algol68',              'apache',                   'applescript',              'apt_sources',
+        'arm',                  'asm',                      'asp',                      'asymptote',
+        'autoconf',             'autohotkey',               'autoit',                   'avisynth',
+        'awk',                  'bascomavr',                'bash',                     'basic4gl',
+        'bibtex',               'blitzbasic',               'bnf',                      'boo',
+        'bf',                   'c',                        'c_mac',                    'cil',
+        'csharp',               'cpp',                      'cpp-qt',                   'c_loadrunner',
+        'caddcl',               'cadlisp',                  'cfdg',                     'chaiscript',
+        'clojure',              'klonec',                   'klonecpp',                 'cmake',
+        'cobol',                'coffeescript',             'cfm',                      'css',
+        'cuesheet',             'd',                        'dcl',                      'dcpu16',
+        'dcs',                  'delphi',                   'oxygene',                  'diff',
+        'div',                  'dos',                      'dot',                      'e',
+        'ecmascript',           'eiffel',                   'email',                    'epc',
+        'erlang',               'fsharp',                   'falcon',                   'fo',
+        'f1',                   'fortran',                  'freebasic',                'freeswitch',
+        'gambas',               'gml',                      'gdb',                      'genero',
+        'genie',                'gettext',                  'go',                       'groovy',
+        'gwbasic',              'haskell',                  'haxe',                     'hicest',
+        'hq9plus',              'html4strict',              'html5',                    'icon',
+        'idl',                  'ini',                      'inno',                     'intercal',
+        'io',                   'j',                        'java',                     'java5',
+        'javascript',           'jquery',                   'kixtart',                  'latex',
+        'ldif',                 'lb',                       'lsl2',                     'lisp',
+        'llvm',                 'locobasic',                'logtalk',                  'lolcode',
+        'lotusformulas',        'lotusscript',              'lscript',                  'lua',
+        'm68k',                 'magiksf',                  'make',                     'mapbasic',
+        'matlab',               'mirc',                     'mmix',                     'modula2',
+        'modula3',              '68000devpac',              'mpasm',                    'mxml',
+        'mysql',                'nagios',                   'newlisp',                  'text',
+        'nsis',                 'oberon2',                  'objeck',                   'objc',
+        'ocaml-brief',          'ocaml',                    'octave',                   'pf',
+        'glsl',                 'oobas',                    'oracle11',                 'oracle8',
+        'oz',                   'parasail',                 'parigp',                   'pascal',
+        'pawn',                 'pcre',                     'per',                      'perl',
+        'perl6',                'php',                      'php-brief',                'pic16',
+        'pike',                 'pixelbender',              'plsql',                    'postgresql',
+        'povray',               'powershell',               'powerbuilder',             'proftpd',
+        'progress',             'prolog',                   'properties',               'providex',
+        'purebasic',            'pycon',                    'python',                   'pys60',
+        'q',                    'qbasic',                   'rsplus',                   'rails',
+        'rebol',                'reg',                      'rexx',                     'robots',
+        'rpmspec',              'ruby',                     'gnuplot',                  'sas',
+        'scala',                'scheme',                   'scilab',                   'sdlbasic',
+        'smalltalk',            'smarty',                   'spark',                    'sparql',
+        'sql',                  'stonescript',              'systemverilog',            'tsql',
+        'tcl',                  'teraterm',                 'thinbasic',                'typoscript',
+        'unicon',               'uscript',                  'ups',                      'urbi',
+        'vala',                 'vbnet',                    'vedit',                    'verilog',
+        'vhdl',                 'vim',                      'visualprolog',             'vb',
+        'visualfoxpro',         'whitespace',               'whois',                    'winbatch',
+        'xbasic',               'xml',                      'xorg_conf',                'xpp',
+        'yaml',                 'z80',                      'zxbasic'
+        }
+    }
 
 local function checkCode()
     local kCode = {200, 200, 208, 208, 203, 205, 203, 205, 48, 30, 28}
@@ -923,22 +1033,32 @@ local function newPaste()
     write("Type")
     term.setCursorPos(30, 4)
     write("File Size")
-    term.setCursorPos(2, 14)
-    term.setBackgroundColor(colors.lightBlue)
-    term.setTextColor(colors.black)
-    write("Selected File Info:")
-    for k = 15, y do
-        paintutils.drawLine(2,k,25,k,colors.lightGray)
+    for k = 14, y do
+        paintutils.drawLine(2,k,50,k,colors.lightGray)
     end
-    term.setTextColor(colors.black)
-    term.setBackgroundColor(colors.green)
-    term.setCursorPos(11,18)
-    write("Upload")
+    
+    local function getFiles(dir, hidden)
+        local rTab = {}
+        for _, v in pairs(fs.list(dir)) do
+            if hidden == true then
+                table.insert(rTab, v)
+            else
+                if string.sub(v, 1, 1) ~= "." then
+                    table.insert(rTab, v)
+                end
+            end
+        end
+        return rTab
+    end
 
     local scroll = 1
+    local synOpt = 128
+    local expOpt = 1
+    local pubOpt = 1
     local dirTab = {""}
+    local hidden = false
     while true do
-        local listTable = fs.list(table.concat(dirTab, "/"))
+        local listTable = getFiles(table.concat(dirTab, "/"), hidden)
         local typeTable = {}
         local sizeTable = {}
 
@@ -953,10 +1073,29 @@ local function newPaste()
                 table.insert(sizeTable, fs.getSize(table.concat(dirTab, "/").."/"..listTable[i]).." Bytes")
             end
         end
-
         table.insert(listTable, 1, "Return")
         table.insert(typeTable, 1, "")
         table.insert(sizeTable, 1, "")
+        
+        local optsTab = {
+            "Syntax highlighting:",
+            "Paste expiration:",
+            "Paste exposure:",
+            "Show hidden files:"
+            }
+        local expiryTab = {
+            "Never",
+            "10 minutes",
+            "1 hour",
+            "1 day",
+            "1 month"
+            }
+        local exposureTab = {
+            "Public",
+            "Private",
+            "Unlisted"
+            }
+
         for i = 1,8 do
             if i > #listTable then break end
             if scroll <= 8 then
@@ -1003,17 +1142,25 @@ local function newPaste()
                 term.setTextColor(colors.red)
                 write(">"..listTable[scroll])
             end
-            paintutils.drawLine(3,16,24,16,colors.white)
-            term.setBackgroundColor(colors.white)
-            term.setTextColor(colors.blue)
-            term.setCursorPos(4,16)
-            if string.len(listTable[scroll]) > 17 then
-                write(listTable[scroll] == "Return" and "" or string.sub(listTable[scroll], 1,17).."...")
-            else
-                write(listTable[scroll] == "Return" and "" or listTable[scroll])
-            end
         end
-            local events = {os.pullEvent()}
+        for i = 1, #optsTab do
+            term.setTextColor(colors.black)
+            term.setBackgroundColor(colors.lightGray)
+            term.setCursorPos(3, 14 + i)
+            write(optsTab[i])
+            term.setCursorPos(24, 14 + i)
+            term.setTextColor(colors.white)
+            write(
+                i == 1 and syntaxTab.menuNames[synOpt] or
+                i == 2 and expiryTab[expOpt] or
+                i == 3 and exposureTab[pubOpt] or
+                i == 4 and hidden and "[X]" or
+                i == 4 and not hidden and "[ ]"
+                )
+        end
+        -- make the syntax change to lua automatically if "*.lua" is found in the filename
+
+        local events = {os.pullEvent()}
         if events[1] == "mouse_scroll" then
             if events[2] == 1 then
                 if scroll >= #listTable then
@@ -1064,6 +1211,8 @@ local function newPaste()
                     end
                 end
             end
+        elseif events[1] == "mouse_click" and events[2] == 1 then
+            
         end
     end
 end
