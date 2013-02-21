@@ -1158,6 +1158,108 @@ local function newPaste()
                 i == 4 and not hidden and "[ ]"
                 )
         end
+        
+        local function drawMiniMenu(menuType, menuTable)
+            for i = 5, 12 do
+                paintutils.drawLine(10, i, 41, i, colors.blue)
+                paintutils.drawLine(11, i, 40, i, colors.white)
+            end
+            for i = 5, 12 do
+                term.setCursorPos(38,i)
+                term.setTextColor(i == 5 and colors.black or i == 12 and colors.black or colors.lightGray)
+                write(i == 5 and "/\\" or i == 12 and "\\/" or "||")
+            end
+            local menuNum = 0
+            local scroll = menuType == "syntax" and 127 or 0
+            local selected = menuType == "syntax" and menuTable[scroll] or menuTable[1]
+            while true do
+                if menuType == "syntax" then
+                    menuNum = #syntaxTab.menuNames
+                    for i = 1, 6 do
+                        paintutils.drawLine(12, i + 5, 36, i + 5, colors.white)
+                        term.setCursorPos(12, i + 5)
+                        if selected == menuTable[scroll + i - 1] then
+                            term.setBackgroundColor(colors.lightGray)
+                        else
+                            term.setBackgroundColor(colors.white)
+                        end
+                        term.setTextColor(colors.blue)
+                        write(syntaxTab.menuNames[scroll + i])
+                    end
+                elseif menuType == "expiration" then
+                    menuNum = #exposureTab
+                    for i = 1, #exposureTab do
+                        paintutils.drawLine(12, i + 5, 36, i + 5, colors.white)
+                        term.setCursorPos(12, i + 5)
+                        if selected == menuTable[scroll] then
+                            term.setBackgroundColor(colors.lightGray)
+                        else
+                            term.setBackgroundColor(colors.white)
+                        end
+                        term.setTextColor(colors.blue)
+                        write(exposureTab[scroll + i])
+                    end
+                elseif menuType == "exposure" then
+                    menuNum = #expiryTab
+                    for i = 1, #expiryTab do
+                        paintutils.drawLine(12, i + 5, 36, i + 5, colors.white)
+                        term.setCursorPos(12, i + 5)
+                        if selected == menuTable[scroll] then
+                            term.setBackgroundColor(colors.lightGray)
+                        else
+                            term.setBackgroundColor(colors.white)
+                        end
+                        term.setTextColor(colors.blue)
+                        write(expiryTab[scroll + i])
+                    end
+                end
+                local events = {os.pullEvent()}
+                if events[1] == "mouse_scroll" then
+                    if events[2] == 1 then
+                        if scroll >= menuNum - 6 then
+                            scroll = menuNum - 6
+                        else
+                            scroll = scroll + 1
+                        end
+                    elseif events[2] == -1 then
+                        if scroll <= 0 then
+                            scroll = 0
+                        else
+                            scroll = scroll - 1
+                        end
+                    end
+                elseif events[1] == "key" then
+                    if events[2] == 208 then
+                        if scroll >= menuNum - 6 then
+                            scroll = menuNum - 6
+                        else
+                            scroll = scroll + 1
+                        end
+                    elseif events[2] == 200 then
+                        if scroll <= 0 then
+                            scroll = 0
+                        else
+                            scroll = scroll - 1
+                        end
+                    end
+                elseif events[1] == "mouse_click" and events[2] == 1 then
+                    if events[3] >= 37 and events[3] >= 36 then
+                        if events[4] == 5 then
+                            scroll = scroll - 5
+                            if scroll <= 5 then
+                                scroll = 0
+                            end
+                        elseif events[4] == 12 then
+                            scroll = scroll + 5
+                            if scroll >= menuNum - 6 then
+                                scroll = menuNum - 6
+                            end
+                        end
+                    --changing selected
+                    end
+                end
+            end
+        end
         -- make the syntax change to lua automatically if "*.lua" is found in the filename
 
         local events = {os.pullEvent()}
@@ -1212,7 +1314,9 @@ local function newPaste()
                 end
             end
         elseif events[1] == "mouse_click" and events[2] == 1 then
-            
+            if events[3] == 1 and events[4] == 1 then
+                drawMiniMenu("syntax", syntaxTab.menuNames)
+            end
         end
     end
 end
