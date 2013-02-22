@@ -1146,6 +1146,7 @@ local function newPaste()
         for i = 1, #optsTab do
             term.setTextColor(colors.black)
             term.setBackgroundColor(colors.lightGray)
+            paintutils.drawLine(2, 14 + i, 50, 14 + i, colors.lightGray)
             term.setCursorPos(3, 14 + i)
             write(optsTab[i])
             term.setCursorPos(24, 14 + i)
@@ -1171,14 +1172,14 @@ local function newPaste()
             end
             local menuNum = 0
             local scroll = menuType == "syntax" and 127 or 0
-            local selected = menuType == "syntax" and menuTable[scroll] or menuTable[1]
+            local selected = menuType == "syntax" and menuTable[scroll + 1] or menuTable[1]
             while true do
                 if menuType == "syntax" then
                     menuNum = #menuTable
                     for i = 1, 6 do
                         paintutils.drawLine(12, i + 5, 36, i + 5, colors.white)
                         term.setCursorPos(12, i + 5)
-                        if selected == menuTable[scroll + i - 1] then
+                        if selected == menuTable[scroll + i] then
                             term.setBackgroundColor(colors.lightGray)
                         else
                             term.setBackgroundColor(colors.white)
@@ -1191,7 +1192,7 @@ local function newPaste()
                     for i = 1, #menuTable do
                         paintutils.drawLine(12, i + 5, 36, i + 5, colors.white)
                         term.setCursorPos(12, i + 5)
-                        if selected == menuTable[scroll] then
+                        if selected == menuTable[scroll + i] then
                             term.setBackgroundColor(colors.lightGray)
                         else
                             term.setBackgroundColor(colors.white)
@@ -1204,7 +1205,7 @@ local function newPaste()
                     for i = 1, #menuTable do
                         paintutils.drawLine(12, i + 5, 36, i + 5, colors.white)
                         term.setCursorPos(12, i + 5)
-                        if selected == menuTable[scroll] then
+                        if selected == menuTable[scroll + i] then
                             term.setBackgroundColor(colors.lightGray)
                         else
                             term.setBackgroundColor(colors.white)
@@ -1244,7 +1245,7 @@ local function newPaste()
                     elseif events[2] == 28 then
                         for i = 1, #menuTable do
                             if selected == menuTable[i] then
-                                local selectedNum = i
+                                selectedNum = i
                                 break
                             end
                         end
@@ -1267,10 +1268,6 @@ local function newPaste()
                         for i = 6, 11 do
                             if events[4] == i then
                                 selected = menuTable[scroll + (i - 5)]
-                                term.setCursorPos(1,1)
-                                term.clearLine()
-                                print(selected)
-                                break
                             end
                         end
                     end
