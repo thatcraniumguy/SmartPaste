@@ -1215,7 +1215,7 @@ local function newPaste()
                     end
                 end
                 local events = {os.pullEvent()}
-                if events[1] == "mouse_scroll" then
+                if events[1] == "mouse_scroll" and menuType == "syntax" then
                     if events[2] == 1 then
                         if scroll >= menuNum - 6 then
                             scroll = menuNum - 6
@@ -1252,7 +1252,7 @@ local function newPaste()
                         return selectedNum
                     end
                 elseif events[1] == "mouse_click" and events[2] == 1 then
-                    if events[3] >= 37 and events[3] >= 36 then
+                    if events[3] >= 37 and events[3] >= 36 and menuType == "syntax" then
                         if events[4] == 5 then
                             scroll = scroll - 5
                             if scroll <= 5 then
