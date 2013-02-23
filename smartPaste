@@ -1090,12 +1090,18 @@ local function newPaste()
             "1 day",
             "1 month"
             }
+        local expTabList = {
+            'N',
+            '10M',
+            '1H',
+            '1D',
+            '1M'
+            }
         local exposureTab = {
             "Public",
             "Private",
             "Unlisted"
             }
-
         for i = 1,8 do
             if i > #listTable then break end
             if scroll <= 8 then
@@ -1318,32 +1324,125 @@ local function newPaste()
                             paintutils.drawLine(1,i,x,i,colors.lightBlue)
                         end
                     else
+                        local fileName = shell.resolve(table.concat(dirTab, "/").."/"..listTable[scroll])
+                        local file = fs.open(fileName, "r")
+                        local postText = file.readAll()
+                        file.close()
+                        for i = 7, 12 do
+                            paintutils.drawLine(10, i, 41, i, colors.blue)
+                            paintutils.drawLine(11, i, 40, i, colors.white)
+                            paintutils.drawLine(12, i, 39, i, colors.lightGray)
+                        end
+                        paintutils.drawLine(13, 10, 38, 10, colors.white)
+                        term.setCursorPos(21, 8)
+                        term.setTextColor(colors.black)
+                        term.setBackgroundColor(colors.lightGray)
+                        write("Post name:")
+                        term.setCursorPos(14,10)
+                        term.setTextColor(colors.black)
+                        term.setBackgroundColor(colors.lightGray)
+                        local postName = limitRead(25)
                         if logged then
                             --add logged upload
+                            local response = http.post(
+                                "http://pastebin.com/api/api_post.php", 
+                                "api_option=paste&"..
+                                "api_dev_key="..devKey.."&"..
+                                "api_paste_format="..syntaxTab.urlCodes[synOpt].."&"..
+                                "api_user_key="..userKey.."&"..
+                                "api_paste_name="..textutils.urlEncode(postName).."&"..
+                                "api_paste_private="..(pubOpt - 1).."&"..
+                                "api_paste_expire_date="..expTabList[expOpt].."&"..
+                                "api_paste_code="..textutils.urlEncode(postText)
+                                )
+                            if response then
+                                local pasteURL = response.readAll()
+                                for i = 7, 12 do
+                                    paintutils.drawLine(10, i, 41, i, colors.blue)
+                                    paintutils.drawLine(11, i, 40, i, colors.white)
+                                    paintutils.drawLine(12, i, 39, i, colors.lightGray)
+                                end
+                                term.setCursorPos(17, 8)
+                                term.setTextColor(colors.black)
+                                term.setBackgroundColor(colors.lightGray)
+                                write("Paste saved at:")
+                                term.setCursorPos(12, 10)
+                                term.setTextColor(colors.lime)
+                                write(pasteURL)
+                                os.pullEvent()
+                            end
                         else
                             --not logged upload
+                            local response = http.post(
+                                "http://pastebin.com/api/api_post.php", 
+                                "api_option=paste&"..
+                                "api_dev_key="..devKey.."&"..
+                                "api_paste_format="..syntaxTab.urlCodes[synOpt].."&"..
+                                "api_paste_name="..textutils.urlEncode(postName).."&"..
+                                "api_paste_expire_date="..expTabList[expOpt].."&"..
+                                "api_paste_code="..textutils.urlEncode(postText)
+                                )
+                            if response then
+                                local pasteURL = response.readAll()
+                                for i = 7, 12 do
+                                    paintutils.drawLine(10, i, 41, i, colors.blue)
+                                    paintutils.drawLine(11, i, 40, i, colors.white)
+                                    paintutils.drawLine(12, i, 39, i, colors.lightGray)
+                                end
+                                term.setCursorPos(17, 8)
+                                term.setTextColor(colors.black)
+                                term.setBackgroundColor(colors.lightGray)
+                                write("Paste saved at:")
+                                term.setCursorPos(12, 10)
+                                term.setTextColor(colors.lime)
+                                write(pasteURL)
+                                os.pullEvent()
+                            end
                         end
                     end
                 end
             end
         elseif events[1] == "mouse_click" and events[2] == 1 then
-            if events[3] >= 24 and events[3] <= 48 then
-                if events[4] == 15 then
+            if events[4] == 15 then
+                if events[3] >= 24 and events[3] <= 48 then
                     synOpt = drawMiniMenu("syntax", syntaxTab.menuNames)
-                elseif events[4] == 16 then
+                end
+            elseif events[4] == 16 then
+                if events[3] >= 24 and events[3] <= 48 then
                     expOpt = drawMiniMenu("expiration", expiryTab)
-                elseif events[4] == 17 then
+                end
+            elseif events[4] == 17 then
+                if events[3] >= 24 and events[3] <= 48 then
                     pubOpt = drawMiniMenu("exposure", exposureTab)
                 end
-            end
-            if events[3] >= 24 and events[3] <= 26 then
-                if events[4] == 18 then
+            elseif events[4] == 18 then
+                if events[3] >= 24 and events[3] <= 26 then
                     if hidden == true then
                         hidden = false
                     elseif hidden == false then
                         hidden = true
                     end
                 end
+            elseif events[4] == 2 then
+                if events[3] >= 1 and events[3] <= 5 then
+                    os.queueEvent(unpack(events))
+                    break
+                elseif events[3] >= 21 and events[3] <= 24 then
+                    os.queueEvent(unpack(events))
+                    break
+                elseif events[3] >= 28 and events[3] <= 31 then
+                    os.queueEvent(unpack(events))
+                    break
+                elseif events[3] >= 34 and events[3] <= 42 then
+                    os.queueEvent(unpack(events))
+                    break
+                elseif events[3] >= 45 and events[3] <= 49 then
+                    os.queueEvent(unpack(events))
+                    break
+                end
+            elseif events[4] == 1 and events[3] == x then
+                os.queueEvent("terminate")
+                break
             end
         end
     end
@@ -1490,15 +1589,3 @@ while true do
         return
     end
 end
-
---[[
-local response = http.post(
-    "http://pastebin.com/api/api_post.php", 
-    "api_option=paste&"..
-    "api_dev_key="..key.."&"..
-    "api_paste_format=lua&"..
-    "api_user_key="..userKey.."&"..
-    "api_paste_name="..textutils.urlEncode(postName).."&"..
-    "api_paste_code="..textutils.urlEncode(postText)
-    )
-]]
