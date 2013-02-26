@@ -8,6 +8,15 @@ else
 end
 
 -- download files needed
+local dlTab = {
+    "pk2Fz2p8",
+    "pUA0miGk"
+    }
+local fnameTab = {
+    "codec",
+    "logo"
+    }
+
 if fWolf then
     if not ioReadFileFromServer() then
         term.clear()
@@ -16,14 +25,19 @@ if fWolf then
         pastebinDownload("pUA0miGk")
     end
 else
-    if not fs.exists("/logo") then
-        term.clear()
-        term.setCursorPos(1,1)
-        print("Downloading logo...")
-        local logoSite = http.get("http://pastebin.com/raw.php?i=pUA0miGk").readAll()
-        local file = fs.open("/logo", "w")
-        file.write(logoSite)
+    for i = 1, # dlTab do
+        if not fs.exists(fnameTab[i]) then
+            term.clear()
+            term.setCursorPos(1,1)
+            term.setTextColor(colors.white)
+            write("Downloading ")
+            term.setTextColor(colors.red)
+            write(fnameTab[i])
+        local site = http.get("http://pastebin.com/raw.php?i="..dlTab[i]).readAll()
+        local file = fs.open(fnameTab[i], "w")
+        file.write(site)
         file.close()
+    end
     end
 end
 
@@ -152,49 +166,138 @@ local syntaxTab = {
 
 local function checkCode()
     local kCode = {200, 200, 208, 208, 203, 205, 203, 205, 48, 30, 28}
-    local zCode = {44, 18, 38, 32, 30}
+    local extraCode = {200, 200, 208, 208, 203, 205, 203, 205, "b", "a", 28}
+    local eventTab = {"key", "key", "key", "key", "key", "key", "key", "key", "char", "char", "key"}
     local code = false
     local index = 1
     while true do
         local events = {os.pullEvent()}
-        if events[1] == "key" then
-            if events[2] == kCode[index] then
-                if index == #kCode then
-                    code = "KONAMI"
-                    break
-                else
-                    code = false
-                    index = index + 1
-                end
-            elseif events[2] == zCode[index] then
-                if index == #zCode then
-                    code = "ZELDA"
-                    break
-                else
-                    code = false
-                    index = index + 1
-                end
-            else
-                code = false
-                os.queueEvent(events[1], events[2], events[3], events[4])
-                index = 1
-                break
-            end
+        --[[for i = 1, #events do
+            term.setCursorPos(20, 5 + i)
+            write(events[i].." / "..i.. " / "..index)
+            sleep(1)
+        end]]
+        sleep(0)
+        if index == #kCode then
+            code = true
+            term.setCursorPos(7,2)
+            term.setBackgroundColor(colors.lightGray)
+            term.setTextColor(colors.red)
+            write("Code entry successful")
+            break
         else
             code = false
-            os.queueEvent(events[1], events[2], events[3], events[4])
+        end
+        if events[1] == "char" then
+            if events[2] == kCode[index] or events[2] == extraCode[index] then
+                index = index + 1
+            else
+                code = false
+                break
+            end
+        elseif events[1] == "key" then
+            if events[2] == kCode[index] or events[2] == extraCode[index] then
+                index = index + 1
+            else
+                code = false
+                break
+            end
+        elseif events[1] ~= "key" and events[1] ~= "char" then
+            os.queueEvent(unpack(events))
             break
         end
     end
     return code
 end
 
-local function unlock(code)
-    if code == "KONAMI" then
-        
-    elseif code == "ZELDA" then
-        
+local function unlock()
+    local codec = fWolf and loadImageFromServer("codec") or paintutils.loadImage("codec")
+    paintutils.drawImage(codec, 1, 3)
+    for i = 3, 10 do
+        term.setTextColor(colors.lightGray)
+        term.setBackgroundColor(colors.black)
+        term.setCursorPos(1, i)
+        write("|")
+        term.setCursorPos(12, i)
+        write("|")
+        term.setCursorPos(40, i)
+        write("|")
+        term.setCursorPos(51, i)
+        write("|")
+        term.setCursorPos(1, i)
+        write(i == 3 and "+"..string.rep("-", 10).."+"..string.rep("-", 27).."+"..string.rep("-", 10).."+" or i == 10 and "+"..string.rep("-", 10).."+"..string.rep("-", 27).."+"..string.rep("-", 10).."+" or "")
     end
+    for i = 12, 18 do
+        term.setTextColor(colors.lightGray)
+        term.setBackgroundColor(colors.black)
+        term.setCursorPos(2, i)
+        write(i == 12 and "+"..string.rep("-", 47).."+" or i == 18 and "+"..string.rep("-", 47).."+" or "|")
+        term.setCursorPos(50, i)
+        write("|")
+    end
+    local talking = true
+    local function static()
+        while talking do
+            local staticColors = {
+                    colors.white,
+                    colors.gray,
+                    colors.black,
+                    colors.lightGray}
+            for i = 2, 11 do
+                for k = 4, 9 do
+                    local cx, cy = term.getCursorPos()
+                    term.setCursorPos(i, k)
+                    term.setBackgroundColor(staticColors[math.random(1,4)])
+                    write(" ")
+                    term.setCursorPos(cx, cy)
+                    term.setBackgroundColor(colors.black)
+                end
+            end
+            for i = 41, 50 do
+                for k = 4, 9 do
+                    local cx, cy = term.getCursorPos()
+                    term.setCursorPos(i, k)
+                    term.setBackgroundColor(staticColors[math.random(1,4)])
+                    write(" ")
+                    term.setCursorPos(cx, cy)
+                    term.setBackgroundColor(colors.black)
+                end
+            end
+            sleep(.01)
+        end
+    end
+    local function writeText()
+        local chatTab = {
+            {"Unknown voice 1: The user has found the",
+             "    backdoor. Shall I terminate the connection",
+             "    to the server?"},
+            {"Unknown voice 2: No. Their dilligence has paid",
+             "    off. Give them more tests. Scatter them",
+             "    throughout cyberspace. Let's see if they",
+             "    can find all of the clues."},
+            {"Unknown voice 1: Understood sir."}
+            }
+
+        term.setBackgroundColor(colors.black)
+        term.setTextColor(colors.white)
+        for i = 1, #chatTab do
+            for k = 1, #chatTab[i] do
+                term.setCursorPos(4, 12 + k)
+                term.setBackgroundColor(colors.black)
+                term.setTextColor(colors.white)
+                textutils.slowWrite(chatTab[i][k], 10)
+            end
+            sleep(2)
+            for v = 13, 17 do
+                paintutils.drawLine(3, v, 49, v, colors.black)
+            end
+        end
+        talking = false
+    end
+    
+    parallel.waitForAll(static, writeText)
+    sleep(1)
+    background()
 end
 
 -- limit read function
@@ -271,27 +374,27 @@ local function limitRead(limX, rChar)
                 returnString = "EXIT LOGIN"
                 break
             elseif events[3] >= 21 and events[3] <= 28 and events[4] == 11 and downloading == true then --download(not logged)
-                os.queueEvent(events[1], events[2], events[3], events[4])
+                os.queueEvent(unpack(events))
                 break
             elseif events[3] >= 1 and events[3] <= 5 and events[4] == 2 then
                 returnString = login and "EXIT LOGIN" or ""
-                os.queueEvent(events[1], events[2], events[3], events[4])
+                os.queueEvent(unpack(events))
                 break
             elseif events[3] >= 21 and events[3] <= 24 and events[4] == 2 then
                 returnString = login and "EXIT LOGIN" or ""
-                os.queueEvent(events[1], events[2], events[3], events[4])
+                os.queueEvent(unpack(events))
                 break
             elseif events[3] >= 28 and events[3] <= 31 and events[4] == 2 then
                 returnString = login and "EXIT LOGIN" or ""
-                os.queueEvent(events[1], events[2], events[3], events[4])
+                os.queueEvent(unpack(events))
                 break
             elseif events[3] >= 34 and events[3] <= 42 and events[4] == 2 then
                 returnString = login and "EXIT LOGIN" or ""
-                os.queueEvent(events[1], events[2], events[3], events[4])
+                os.queueEvent(unpack(events))
                 break
             elseif events[3] >= 45 and events[3] <= 49 and events[4] == 2 then
                 returnString = login and "EXIT LOGIN" or ""
-                os.queueEvent(events[1], events[2], events[3], events[4])
+                os.queueEvent(unpack(events))
                 break
             elseif events[3] == x and events[4] == 1 then
                 term.setBackgroundColor(colors.black)
@@ -466,12 +569,12 @@ local function helpScreen()
                 print("How to login")
                 term.setTextColor(colors.white)
                 write([[
-    Select the "Login" option
+ Select the "Login" option
 at the top. You will enter
 your personal login for 
 your pastebin account.
 
-    Rest assured, your account
+ Rest assured, your account
 information is not stored
 anywhere. We use a user
 key once we receive a 
@@ -490,7 +593,7 @@ Pastebin.]])
                 print("How to retrieve a post")
                 term.setTextColor(colors.white)
                 write([[
-    Select "Download" from the
+ Select "Download" from the
 menu.
 
 If you are logged in, you
@@ -515,7 +618,19 @@ paste code.]])
                 print("How to save a post")
                 term.setTextColor(colors.white)
                 write([[
-]])
+ Select 'New' from the main
+menu at the top. From there
+you can scroll through the
+files you have on your
+computer/turtle. Use the
+Enter key to make your
+selection.
+ You have the option of
+changing the syntax
+highlighting of your paste,
+as well as the expiration,
+and if you are logged in,
+even the exposure.]])
             end},
         {topic = "What's new",
         y = 10,
@@ -556,7 +671,7 @@ paste code.]])
                 write([[
 Code -- Cranium
 Design -- Cranium
-Logo -- Cranium
+Logo -- RunasSudo
 Firewolf -- 1Lann and
          Gravityscore
 Bug Fixing -- CC Forums
@@ -612,19 +727,19 @@ claimed by the user.]])
             end
             if events[4] == 2 then
                 if events[3] >= 1 and events[3] <= 5 then
-                    os.queueEvent(events[1], events[2], events[3], events[4])
+                    os.queueEvent(unpack(events))
                     break
                 elseif events[3] >= 21 and events[3] <= 24 then
-                    os.queueEvent(events[1], events[2], events[3], events[4])
+                    os.queueEvent(unpack(events))
                     break
                 elseif events[3] >= 28 and events[3] <= 31 then
-                    os.queueEvent(events[1], events[2], events[3], events[4])
+                    os.queueEvent(unpack(events))
                     break
                 elseif events[3] >= 34 and events[3] <= 42 then
-                    os.queueEvent(events[1], events[2], events[3], events[4])
+                    os.queueEvent(unpack(events))
                     break
                 elseif events[3] >= 45 and events[3] <= 49 then
-                    os.queueEvent(events[1], events[2], events[3], events[4])
+                    os.queueEvent(unpack(events))
                     break
                 end
             elseif events[4] == 1 and events[3] == x then
@@ -929,19 +1044,19 @@ local function downloadPaste()
                     end
                 elseif events[4] == 2 then
                     if events[3] >= 1 and events[3] <= 5 then
-                        os.queueEvent(events[1], events[2], events[3], events[4])
+                        os.queueEvent(unpack(events))
                         break
                     elseif events[3] >= 21 and events[3] <= 24 then
-                        os.queueEvent(events[1], events[2], events[3], events[4])
+                        os.queueEvent(unpack(events))
                         break
                     elseif events[3] >= 28 and events[3] <= 31 then
-                        os.queueEvent(events[1], events[2], events[3], events[4])
+                        os.queueEvent(unpack(events))
                         break
                     elseif events[3] >= 34 and events[3] <= 42 then
-                        os.queueEvent(events[1], events[2], events[3], events[4])
+                        os.queueEvent(unpack(events))
                         break
                     elseif events[3] >= 45 and events[3] <= 49 then
-                        os.queueEvent(events[1], events[2], events[3], events[4])
+                        os.queueEvent(unpack(events))
                         break
                     end
                 elseif events[3] == x and events[4] == 1 then
@@ -995,19 +1110,19 @@ local function downloadPaste()
                         end
                     elseif events[4] == 2 then
                         if events[3] >= 1 and events[3] <= 5 then
-                            os.queueEvent(events[1], events[2], events[3], events[4])
+                            os.queueEvent(unpack(events))
                             break
                         elseif events[3] >= 21 and events[3] <= 24 then
-                            os.queueEvent(events[1], events[2], events[3], events[4])
+                            os.queueEvent(unpack(events))
                             break
                         elseif events[3] >= 28 and events[3] <= 31 then
-                            os.queueEvent(events[1], events[2], events[3], events[4])
+                            os.queueEvent(unpack(events))
                             break
                         elseif events[3] >= 34 and events[3] <= 42 then
-                            os.queueEvent(events[1], events[2], events[3], events[4])
+                            os.queueEvent(unpack(events))
                             break
                         elseif events[3] >= 45 and events[3] <= 49 then
-                            os.queueEvent(events[1], events[2], events[3], events[4])
+                            os.queueEvent(unpack(events))
                             break
                         end
                     elseif events[3] == x and events[4] == 1 then
@@ -1255,6 +1370,9 @@ local function newPaste()
                                 break
                             end
                         end
+            for i = 5, 12 do
+                paintutils.drawLine(2, i, 50, i, colors.lightBlue)
+            end
                         return selectedNum
                     end
                 elseif events[1] == "mouse_click" and events[2] == 1 then
@@ -1413,7 +1531,7 @@ local function newPaste()
                 end
             elseif events[4] == 17 then
                 if events[3] >= 24 and events[3] <= 48 then
-                    pubOpt = drawMiniMenu("exposure", exposureTab)
+                    pubOpt = logged and drawMiniMenu("exposure", exposureTab) or 1
                 end
             elseif events[4] == 18 then
                 if events[3] >= 24 and events[3] <= 26 then
@@ -1462,7 +1580,9 @@ buttons = {
                 redirect("home")
             end or
             function()
-                unlock(checkCode())
+        if checkCode() then
+                    unlock()
+        end
             end,
     color = colors.black,
     BGcolor = colors.lightGray,
@@ -1559,8 +1679,7 @@ function background()
     end
 end
 
-
-
+-- Main menu navigation system
 
 background()
 while true do
