@@ -1,4 +1,5 @@
 --check Firewolf installation
+local fWolf = false
 if browserAgent then
     if browserAgent:find("Firewolf") then
         fWolf = true
@@ -7,43 +8,21 @@ else
     fWolf = false
 end
 
--- download files needed
-local dlTab = {
-    "pk2Fz2p8",
-    "pUA0miGk"
-    }
-local fnameTab = {
-    "codec",
-    "logo"
-    }
-
-if fWolf then
-    if not ioReadFileFromServer() then
-        term.clear()
-        term.setCursorPos(1,1)
-        print("Downloading logo...")
-        pastebinDownload("pUA0miGk")
-    end
-else
-    for i = 1, # dlTab do
-        if not fs.exists(fnameTab[i]) then
-            term.clear()
-            term.setCursorPos(1,1)
-            term.setTextColor(colors.white)
-            write("Downloading ")
-            term.setTextColor(colors.red)
-            write(fnameTab[i])
-        local site = http.get("http://pastebin.com/raw.php?i="..dlTab[i]).readAll()
-        local file = fs.open(fnameTab[i], "w")
-        file.write(site)
-        file.close()
-    end
-    end
+--Throw relevant errors
+local x,y = term.getSize()
+if turtle then
+    print("You're an idiot. Why do you need this on a turtle???")
+    return
+elseif not term.isColor() then
+    print("Why would you think I will make non color support? This is 100% mouse controlled!")
+    return
+elseif x ~= 51 and y ~= 19 then
+    print("This program is best run on a 51x19 pixel screen. It is not intended for monitors.")
+    return
 end
 
 local devKey = "3575e50cc6635311078014a550bc3f9f"
 local userKey = ""
-local x,y = term.getSize()
 local username = "TEMP_USER"
 local password = "TEMP_PASSWORD"
 local logged = false
@@ -164,6 +143,10 @@ local syntaxTab = {
         }
     }
 
+local logo = {[1]={[1]=0,[2]=0,[3]=128,[4]=128,[5]=128,[6]=128,[7]=128,[8]=128,[9]=128,[10]=128,[11]=128,[12]=128,[13]=128,[14]=128,[15]=128,[16]=128,[17]=0,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,},[2]={[1]=0,[2]=128,[3]=1,[4]=1,[5]=1,[6]=1,[7]=1,[8]=1,[9]=1,[10]=1,[11]=1,[12]=1,[13]=1,[14]=1,[15]=1,[16]=1,[17]=128,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,},[3]={[1]=128,[2]=1,[3]=1,[4]=1,[5]=8,[6]=8,[7]=8,[8]=1,[9]=1,[10]=1,[11]=1,[12]=1,[13]=32,[14]=1,[15]=1,[16]=1,[17]=1,[18]=128,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,},[4]={[1]=128,[2]=1,[3]=1,[4]=8,[5]=1,[6]=1,[7]=1,[8]=8,[9]=1,[10]=1,[11]=1,[12]=32,[13]=32,[14]=32,[15]=1,[16]=1,[17]=1,[18]=128,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,},[5]={[1]=128,[2]=1,[3]=1,[4]=8,[5]=1,[6]=1,[7]=1,[8]=1,[9]=1,[10]=1,[11]=32,[12]=32,[13]=32,[14]=32,[15]=32,[16]=1,[17]=1,[18]=128,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,},[6]={[1]=128,[2]=1,[3]=1,[4]=1,[5]=8,[6]=8,[7]=8,[8]=1,[9]=1,[10]=1,[11]=1,[12]=1,[13]=32,[14]=1,[15]=1,[16]=1,[17]=1,[18]=128,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,},[7]={[1]=128,[2]=1,[3]=1,[4]=1,[5]=1,[6]=1,[7]=1,[8]=8,[9]=1,[10]=1,[11]=1,[12]=1,[13]=32,[14]=1,[15]=1,[16]=1,[17]=1,[18]=128,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,},[8]={[1]=128,[2]=1,[3]=1,[4]=8,[5]=1,[6]=1,[7]=1,[8]=8,[9]=1,[10]=1,[11]=1,[12]=1,[13]=1,[14]=1,[15]=1,[16]=1,[17]=1,[18]=128,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,},[9]={[1]=128,[2]=1,[3]=1,[4]=1,[5]=8,[6]=8,[7]=8,[8]=1,[9]=1,[10]=1,[11]=2048,[12]=2048,[13]=2048,[14]=2048,[15]=1,[16]=1,[17]=1,[18]=128,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,},[10]={[1]=128,[2]=1,[3]=1,[4]=1,[5]=1,[6]=1,[7]=1,[8]=1,[9]=1,[10]=1,[11]=2048,[12]=1,[13]=1,[14]=1,[15]=2048,[16]=1,[17]=1,[18]=128,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,},[11]={[1]=128,[2]=1,[3]=1,[4]=1,[5]=1,[6]=2,[7]=1,[8]=1,[9]=1,[10]=1,[11]=2048,[12]=1,[13]=1,[14]=1,[15]=2048,[16]=1,[17]=1,[18]=128,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,},[12]={[1]=128,[2]=1,[3]=1,[4]=1,[5]=1,[6]=2,[7]=1,[8]=1,[9]=1,[10]=1,[11]=2048,[12]=2048,[13]=2048,[14]=2048,[15]=1,[16]=1,[17]=1,[18]=128,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,},[13]={[1]=128,[2]=1,[3]=1,[4]=2,[5]=2,[6]=2,[7]=2,[8]=2,[9]=1,[10]=1,[11]=2048,[12]=1,[13]=1,[14]=1,[15]=1,[16]=1,[17]=1,[18]=128,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,},[14]={[1]=128,[2]=1,[3]=1,[4]=1,[5]=2,[6]=2,[7]=2,[8]=1,[9]=1,[10]=1,[11]=2048,[12]=1,[13]=1,[14]=1,[15]=1,[16]=1,[17]=1,[18]=128,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,},[15]={[1]=128,[2]=1,[3]=1,[4]=1,[5]=1,[6]=2,[7]=1,[8]=1,[9]=1,[10]=1,[11]=2048,[12]=1,[13]=1,[14]=1,[15]=1,[16]=1,[17]=1,[18]=128,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,},[16]={[1]=0,[2]=128,[3]=1,[4]=1,[5]=1,[6]=1,[7]=1,[8]=1,[9]=1,[10]=1,[11]=1,[12]=1,[13]=1,[14]=1,[15]=1,[16]=1,[17]=128,[18]=0,[19]=0,[20]=0,[21]=0,[22]=0,[23]=0,[24]=0,[25]=0,[26]=0,[27]=0,[28]=0,[29]=0,[30]=0,[31]=0,[32]=0,[33]=0,[34]=0,[35]=0,[36]=0,[37]=0,[38]=0,[39]=0,[40]=0,[41]=0,[42]=0,[43]=0,[44]=0,[45]=0,[46]=0,[47]=0,[48]=0,[49]=0,},[17]={[1]=0,[2]=0,[3]=128,[4]=128,[5]=128,[6]=128,[7]=128,[8]=128,[9]=128,[10]=128,[11]=128,[12]=128,[13]=128,[14]=128,[15]=128,[16]=128,},}
+
+local codec = {[1]={[1]=128,[2]=128,[3]=128,[4]=128,[5]=128,[6]=128,[7]=128,[8]=128,[9]=128,[10]=128,[11]=128,[12]=128,[13]=128,[14]=128,[15]=128,[16]=128,[17]=128,[18]=128,[19]=128,[20]=128,[21]=128,[22]=128,[23]=128,[24]=128,[25]=128,[26]=128,[27]=128,[28]=128,[29]=128,[30]=128,[31]=128,[32]=128,[33]=128,[34]=128,[35]=128,[36]=128,[37]=128,[38]=128,[39]=128,[40]=128,[41]=128,[42]=128,[43]=128,[44]=128,[45]=128,[46]=128,[47]=128,[48]=128,[49]=128,[50]=128,[51]=128,},[2]={[1]=128,[2]=32768,[3]=32768,[4]=32768,[5]=32768,[6]=32768,[7]=32768,[8]=32768,[9]=32768,[10]=32768,[11]=32768,[12]=128,[13]=32768,[14]=8192,[15]=32768,[16]=8192,[17]=8192,[18]=8192,[19]=8192,[20]=8192,[21]=8192,[22]=32768,[23]=32768,[24]=32768,[25]=32768,[26]=32768,[27]=32768,[28]=32768,[29]=32768,[30]=32768,[31]=32768,[32]=32768,[33]=32768,[34]=32768,[35]=32768,[36]=32768,[37]=32768,[38]=32768,[39]=32768,[40]=128,[41]=32768,[42]=32768,[43]=32768,[44]=32768,[45]=32768,[46]=32768,[47]=32768,[48]=32768,[49]=32768,[50]=32768,[51]=128,},[3]={[1]=128,[2]=32768,[3]=32768,[4]=32768,[5]=32768,[6]=32768,[7]=32768,[8]=32768,[9]=32768,[10]=32768,[11]=32768,[12]=128,[13]=32768,[14]=32768,[15]=32768,[16]=32768,[17]=32768,[18]=32768,[19]=32768,[20]=32768,[21]=32768,[22]=32768,[23]=1,[24]=1,[25]=32768,[26]=1,[27]=32768,[28]=1,[29]=32768,[30]=1,[31]=1,[32]=32768,[33]=32768,[34]=1,[35]=1,[36]=32768,[37]=1,[38]=1,[39]=1,[40]=128,[41]=32768,[42]=32768,[43]=32768,[44]=32768,[45]=32768,[46]=32768,[47]=32768,[48]=32768,[49]=32768,[50]=32768,[51]=128,},[4]={[1]=128,[2]=32768,[3]=32768,[4]=32768,[5]=32768,[6]=32768,[7]=32768,[8]=32768,[9]=32768,[10]=32768,[11]=32768,[12]=128,[13]=32768,[14]=8192,[15]=32768,[16]=8192,[17]=8192,[18]=8192,[19]=8192,[20]=32768,[21]=32768,[22]=32768,[23]=32768,[24]=1,[25]=32768,[26]=1,[27]=32768,[28]=1,[29]=32768,[30]=32768,[31]=1,[32]=32768,[33]=32768,[34]=32768,[35]=1,[36]=32768,[37]=32768,[38]=32768,[39]=1,[40]=128,[41]=32768,[42]=32768,[43]=32768,[44]=32768,[45]=32768,[46]=32768,[47]=32768,[48]=32768,[49]=32768,[50]=32768,[51]=128,},[5]={[1]=128,[2]=32768,[3]=32768,[4]=32768,[5]=32768,[6]=32768,[7]=32768,[8]=32768,[9]=32768,[10]=32768,[11]=32768,[12]=128,[13]=32768,[14]=32768,[15]=32768,[16]=32768,[17]=32768,[18]=32768,[19]=32768,[20]=32768,[21]=32768,[22]=32768,[23]=32768,[24]=1,[25]=32768,[26]=1,[27]=1,[28]=1,[29]=32768,[30]=32768,[31]=1,[32]=32768,[33]=32768,[34]=32768,[35]=1,[36]=32768,[37]=1,[38]=1,[39]=1,[40]=128,[41]=32768,[42]=32768,[43]=32768,[44]=32768,[45]=32768,[46]=32768,[47]=32768,[48]=32768,[49]=32768,[50]=32768,[51]=128,},[6]={[1]=128,[2]=32768,[3]=32768,[4]=32768,[5]=32768,[6]=32768,[7]=32768,[8]=32768,[9]=32768,[10]=32768,[11]=32768,[12]=128,[13]=32768,[14]=8192,[15]=32768,[16]=8192,[17]=8192,[18]=32768,[19]=32768,[20]=32768,[21]=32768,[22]=32768,[23]=32768,[24]=1,[25]=32768,[26]=32768,[27]=32768,[28]=1,[29]=32768,[30]=32768,[31]=1,[32]=32768,[33]=32768,[34]=32768,[35]=1,[36]=32768,[37]=1,[38]=32768,[39]=32768,[40]=128,[41]=32768,[42]=32768,[43]=32768,[44]=32768,[45]=32768,[46]=32768,[47]=32768,[48]=32768,[49]=32768,[50]=32768,[51]=128,},[7]={[1]=128,[2]=32768,[3]=32768,[4]=32768,[5]=32768,[6]=32768,[7]=32768,[8]=32768,[9]=32768,[10]=32768,[11]=32768,[12]=128,[13]=32768,[14]=32768,[15]=32768,[16]=32768,[17]=32768,[18]=32768,[19]=32768,[20]=32768,[21]=32768,[22]=32768,[23]=32768,[24]=1,[25]=32768,[26]=32768,[27]=32768,[28]=1,[29]=32768,[30]=32768,[31]=1,[32]=32768,[33]=1,[34]=32768,[35]=1,[36]=32768,[37]=1,[38]=1,[39]=1,[40]=128,[41]=32768,[42]=32768,[43]=32768,[44]=32768,[45]=32768,[46]=32768,[47]=32768,[48]=32768,[49]=32768,[50]=32768,[51]=128,},[8]={[1]=128,[2]=128,[3]=128,[4]=128,[5]=128,[6]=128,[7]=128,[8]=128,[9]=128,[10]=128,[11]=128,[12]=128,[13]=128,[14]=128,[15]=128,[16]=128,[17]=128,[18]=128,[19]=128,[20]=128,[21]=128,[22]=128,[23]=128,[24]=128,[25]=128,[26]=128,[27]=128,[28]=128,[29]=128,[30]=128,[31]=128,[32]=128,[33]=128,[34]=128,[35]=128,[36]=128,[37]=128,[38]=128,[39]=128,[40]=128,[41]=128,[42]=128,[43]=128,[44]=128,[45]=128,[46]=128,[47]=128,[48]=128,[49]=128,[50]=128,[51]=128,},[9]={[1]=32768,[2]=32768,[3]=32768,[4]=32768,[5]=32768,[6]=32768,[7]=32768,[8]=32768,[9]=32768,[10]=32768,[11]=32768,[12]=32768,[13]=32768,[14]=32768,[15]=32768,[16]=32768,[17]=32768,[18]=32768,[19]=32768,[20]=32768,[21]=32768,[22]=32768,[23]=32768,[24]=32768,[25]=32768,[26]=32768,[27]=32768,[28]=32768,[29]=32768,[30]=32768,[31]=32768,[32]=32768,[33]=32768,[34]=32768,[35]=32768,[36]=32768,[37]=32768,[38]=32768,[39]=32768,[40]=32768,[41]=32768,[42]=32768,[43]=32768,[44]=32768,[45]=32768,[46]=32768,[47]=32768,[48]=32768,[49]=32768,[50]=32768,[51]=32768,},[10]={[1]=32768,[2]=256,[3]=256,[4]=256,[5]=256,[6]=256,[7]=256,[8]=256,[9]=256,[10]=256,[11]=256,[12]=256,[13]=256,[14]=256,[15]=256,[16]=256,[17]=256,[18]=256,[19]=256,[20]=256,[21]=256,[22]=256,[23]=256,[24]=256,[25]=256,[26]=256,[27]=256,[28]=256,[29]=256,[30]=256,[31]=256,[32]=256,[33]=256,[34]=256,[35]=256,[36]=256,[37]=256,[38]=256,[39]=256,[40]=256,[41]=256,[42]=256,[43]=256,[44]=256,[45]=256,[46]=256,[47]=256,[48]=256,[49]=256,[50]=256,[51]=32768,},[11]={[1]=32768,[2]=256,[3]=32768,[4]=32768,[5]=32768,[6]=32768,[7]=32768,[8]=32768,[9]=32768,[10]=32768,[11]=32768,[12]=32768,[13]=32768,[14]=32768,[15]=32768,[16]=32768,[17]=32768,[18]=32768,[19]=32768,[20]=32768,[21]=32768,[22]=32768,[23]=32768,[24]=32768,[25]=32768,[26]=32768,[27]=32768,[28]=32768,[29]=32768,[30]=32768,[31]=32768,[32]=32768,[33]=32768,[34]=32768,[35]=32768,[36]=32768,[37]=32768,[38]=32768,[39]=32768,[40]=32768,[41]=32768,[42]=32768,[43]=32768,[44]=32768,[45]=32768,[46]=32768,[47]=32768,[48]=32768,[49]=32768,[50]=256,[51]=32768,},[12]={[1]=32768,[2]=256,[3]=32768,[4]=32768,[5]=32768,[6]=32768,[7]=32768,[8]=32768,[9]=32768,[10]=32768,[11]=32768,[12]=32768,[13]=32768,[14]=32768,[15]=32768,[16]=32768,[17]=32768,[18]=32768,[19]=32768,[20]=32768,[21]=32768,[22]=32768,[23]=32768,[24]=32768,[25]=32768,[26]=32768,[27]=32768,[28]=32768,[29]=32768,[30]=32768,[31]=32768,[32]=32768,[33]=32768,[34]=32768,[35]=32768,[36]=32768,[37]=32768,[38]=32768,[39]=32768,[40]=32768,[41]=32768,[42]=32768,[43]=32768,[44]=32768,[45]=32768,[46]=32768,[47]=32768,[48]=32768,[49]=32768,[50]=256,[51]=32768,},[13]={[1]=32768,[2]=256,[3]=32768,[4]=32768,[5]=32768,[6]=32768,[7]=32768,[8]=32768,[9]=32768,[10]=32768,[11]=32768,[12]=32768,[13]=32768,[14]=32768,[15]=32768,[16]=32768,[17]=32768,[18]=32768,[19]=32768,[20]=32768,[21]=32768,[22]=32768,[23]=32768,[24]=32768,[25]=32768,[26]=32768,[27]=32768,[28]=32768,[29]=32768,[30]=32768,[31]=32768,[32]=32768,[33]=32768,[34]=32768,[35]=32768,[36]=32768,[37]=32768,[38]=32768,[39]=32768,[40]=32768,[41]=32768,[42]=32768,[43]=32768,[44]=32768,[45]=32768,[46]=32768,[47]=32768,[48]=32768,[49]=32768,[50]=256,[51]=32768,},[14]={[1]=32768,[2]=256,[3]=32768,[4]=32768,[5]=32768,[6]=32768,[7]=32768,[8]=32768,[9]=32768,[10]=32768,[11]=32768,[12]=32768,[13]=32768,[14]=32768,[15]=32768,[16]=32768,[17]=32768,[18]=32768,[19]=32768,[20]=32768,[21]=32768,[22]=32768,[23]=32768,[24]=32768,[25]=32768,[26]=32768,[27]=32768,[28]=32768,[29]=32768,[30]=32768,[31]=32768,[32]=32768,[33]=32768,[34]=32768,[35]=32768,[36]=32768,[37]=32768,[38]=32768,[39]=32768,[40]=32768,[41]=32768,[42]=32768,[43]=32768,[44]=32768,[45]=32768,[46]=32768,[47]=32768,[48]=32768,[49]=32768,[50]=256,[51]=32768,},[15]={[1]=32768,[2]=256,[3]=32768,[4]=32768,[5]=32768,[6]=32768,[7]=32768,[8]=32768,[9]=32768,[10]=32768,[11]=32768,[12]=32768,[13]=32768,[14]=32768,[15]=32768,[16]=32768,[17]=32768,[18]=32768,[19]=32768,[20]=32768,[21]=32768,[22]=32768,[23]=32768,[24]=32768,[25]=32768,[26]=32768,[27]=32768,[28]=32768,[29]=32768,[30]=32768,[31]=32768,[32]=32768,[33]=32768,[34]=32768,[35]=32768,[36]=32768,[37]=32768,[38]=32768,[39]=32768,[40]=32768,[41]=32768,[42]=32768,[43]=32768,[44]=32768,[45]=32768,[46]=32768,[47]=32768,[48]=32768,[49]=32768,[50]=256,[51]=32768,},[16]={[1]=32768,[2]=256,[3]=256,[4]=256,[5]=256,[6]=256,[7]=256,[8]=256,[9]=256,[10]=256,[11]=256,[12]=256,[13]=256,[14]=256,[15]=256,[16]=256,[17]=256,[18]=256,[19]=256,[20]=256,[21]=256,[22]=256,[23]=256,[24]=256,[25]=256,[26]=256,[27]=256,[28]=256,[29]=256,[30]=256,[31]=256,[32]=256,[33]=256,[34]=256,[35]=256,[36]=256,[37]=256,[38]=256,[39]=256,[40]=256,[41]=256,[42]=256,[43]=256,[44]=256,[45]=256,[46]=256,[47]=256,[48]=256,[49]=256,[50]=256,[51]=32768,},[17]={[1]=32768,[2]=32768,[3]=32768,[4]=32768,[5]=32768,[6]=32768,[7]=32768,[8]=32768,[9]=32768,[10]=32768,[11]=32768,[12]=32768,[13]=32768,[14]=32768,[15]=32768,[16]=32768,[17]=32768,[18]=32768,[19]=32768,[20]=32768,[21]=32768,[22]=32768,[23]=32768,[24]=32768,[25]=32768,[26]=32768,[27]=32768,[28]=32768,[29]=32768,[30]=32768,[31]=32768,[32]=32768,[33]=32768,[34]=32768,[35]=32768,[36]=32768,[37]=32768,[38]=32768,[39]=32768,[40]=32768,[41]=32768,[42]=32768,[43]=32768,[44]=32768,[45]=32768,[46]=32768,[47]=32768,[48]=32768,[49]=32768,[50]=32768,[51]=32768,},}
+
 local function checkCode()
     local kCode = {200, 200, 208, 208, 203, 205, 203, 205, 48, 30, 28}
     local extraCode = {200, 200, 208, 208, 203, 205, 203, 205, "b", "a", 28}
@@ -211,7 +194,6 @@ local function checkCode()
 end
 
 local function unlock()
-    local codec = fWolf and loadImageFromServer("codec") or paintutils.loadImage("codec")
     paintutils.drawImage(codec, 1, 3)
     for i = 3, 10 do
         term.setTextColor(colors.lightGray)
@@ -627,8 +609,7 @@ Enter key to make your
 selection.
  You have the option of
 changing the syntax
-highlighting of your paste,
-as well as the expiration,
+of your paste, expiration,
 and if you are logged in,
 even the exposure.]])
             end},
@@ -671,7 +652,7 @@ even the exposure.]])
                 write([[
 Code -- Cranium
 Design -- Cranium
-Logo -- RunasSudo
+Logo -- Cranium
 Firewolf -- 1Lann and
          Gravityscore
 Bug Fixing -- CC Forums
@@ -696,7 +677,7 @@ so much better.]])
                 write([[
       -Version 2.0-
  Written for ComputerCraft
-       ver. 1.48
+       ver. 1.48+
  This awesome program was
 written by Cranium, and use
 of this program is granted
@@ -841,89 +822,93 @@ local function downloadPaste()
 
         local scroll = 1
         while true do
-            for i = 1, 8 do
+            local function drawList(titleTable, formatTable, scroll)
                 if scroll <= 8 then
-                    paintutils.drawLine(1,i + 4,x,i + 4,colors.lightBlue)
-                    term.setCursorPos(1, 4 + i)
-                    if string.len(titleTable[i]) > 15 then
-                        term.setTextColor(colors.white)
+                    for i = 1, 8 do
+                        if i > #titleTable then break end
                         term.setBackgroundColor(colors.lightBlue)
-                        write(" "..string.sub(titleTable[i], 1, 12).."...")
-                    else
+                        term.setCursorPos(1, 4 + i)
                         term.setTextColor(colors.white)
-                        term.setBackgroundColor(colors.lightBlue)
-                        write(" "..titleTable[i])
+                        if string.len(titleTable[i]) >= 17 then
+                            write(" "..string.sub(titleTable[i], 1, 14).."...") 
+                        else
+                            write(" "..titleTable[i])
+                        end
+                        local mX,mY = term.getCursorPos()
+                        for i = 1, 19 - mX do
+                            write(" ")
+                        end
+                        write(formatTable[i])
+                        local mX,mY = term.getCursorPos()
+                        for i = 1, 30 - mX do
+                            write(" ")
+                        end
+                        write(privTable[i])
+                        local mX,mY = term.getCursorPos()
+                        for i = 1, 50 - mX do
+                            write(" ")
+                        end
                     end
-                    term.setCursorPos(1, scroll + 4)
+                    term.setCursorPos(1, 4 + scroll)
                     term.setTextColor(colors.red)
-                    term.setBackgroundColor(colors.lightBlue)
-                    if string.len(titleTable[scroll]) > 15 then
-                        write(">"..string.sub(titleTable[scroll], 1, 12).."...")
+                    if string.len(titleTable[scroll]) >= 17 then
+                        write(">"..string.sub(titleTable[scroll], 1, 14).."...")
                     else
                         write(">"..titleTable[scroll])
                     end
-                    if string.len(formatTable[i]) > 9 then
-                        term.setCursorPos(19, 4 + i)
-                        term.setTextColor(colors.white)
-                        write(string.sub(formatTable[i], 1, 6).."...")
-                    else
-                        term.setCursorPos(19, 4 + i)
-                        term.setTextColor(colors.white)
-                        write(formatTable[i]..string.rep(" ", 11 - string.len(formatTable[i])))
+                    local mX,mY = term.getCursorPos()
+                    for i = 1, 19 - mX do
+                        write(" ")
                     end
-                    term.setCursorPos(30, 4 + i)
-                    term.setTextColor(colors.white)
-                    write(privTable[i])
-                    local curX,curY = term.getCursorPos()
-                    write(string.rep(" ", x - curX))
-                elseif scroll > 8 then
-                    paintutils.drawLine(1,i + 4,x,i + 4,colors.lightBlue)
-                    term.setCursorPos(1, 4 + i)
-                    if string.len(titleTable[scroll + (i - 8)]) > 15 then
-                        term.setTextColor(colors.white)
+                else
+                    for i = 1, 8 do
+                        if i > #titleTable then break end
                         term.setBackgroundColor(colors.lightBlue)
-                        write(" "..string.sub(titleTable[scroll + (i - 8)], 1, 12).."...")
-                    else
+                        term.setCursorPos(1, 4 + i)
                         term.setTextColor(colors.white)
-                        term.setBackgroundColor(colors.lightBlue)
-                        write(" "..titleTable[scroll + (i - 8)])
+                        if string.len(titleTable[scroll + (i - 8)]) >= 17 then
+                            write(" "..string.sub(titleTable[scroll + (i - 8)], 1, 14).."...") 
+                        else
+                            write(" "..titleTable[scroll + (i - 8)])
+                        end
+                        local mX,mY = term.getCursorPos()
+                        for i = 1, 19 - mX do
+                            write(" ")
+                        end
+                            write(formatTable[scroll + (i - 8)])
+                        local mX,mY = term.getCursorPos()
+                        for i = 1, 30 - mX do
+                            write(" ")
+                        end
+                        write(privTable[scroll + (i - 8)])
+                        local mX,mY = term.getCursorPos()
+                        for i = 1, 50 - mX do
+                            write(" ")
+                        end
                     end
                     term.setCursorPos(1, 12)
                     term.setTextColor(colors.red)
-                    term.setBackgroundColor(colors.lightBlue)
-                    if string.len(titleTable[scroll]) > 15 then
-                        write(">"..string.sub(titleTable[scroll + (i - 8)], 1, 12).."...")
+                    if string.len(titleTable[scroll]) >= 17 then
+                        write(">"..string.sub(titleTable[scroll], 1, 14).."...")
                     else
-                        write(">"..titleTable[scroll + (i - 8)])
+                        write(">"..titleTable[scroll])
                     end
-                    if string.len(formatTable[i]) > 9 then
-                        term.setCursorPos(19, 4 + i)
-                        term.setTextColor(colors.white)
-                        write(string.sub(formatTable[scroll + (i - 8)], 1, 6).."...")
-                    else
-                        term.setCursorPos(19, 4 + i)
-                        term.setTextColor(colors.white)
-                        write(formatTable[scroll + (i - 8)])
+                    local mX,mY = term.getCursorPos()
+                    for i = 1, 19 - mX do
+                        write(" ")
                     end
-                    term.setCursorPos(30, 4 + i)
-                    term.setTextColor(colors.white)
-                    write(privTable[scroll + (i - 8)])
-                    local curX,curY = term.getCursorPos()
-                    write(string.rep(" ", x - curX))
                 end
-                if string.len(titleTable[scroll]) > 22 then
-                    paintutils.drawLine(3,16,24,16,colors.white)
-                    term.setCursorPos(3, 16)
-                    term.setTextColor(colors.blue)
+                paintutils.drawLine(3, 16, 24, 16, colors.white)
+                term.setCursorPos(3, 16)
+                term.setTextColor(colors.blue)
+                if string.len(titleTable[scroll]) >= 19 then
                     write(string.sub(titleTable[scroll], 1, 19).."...")
                 else
-                    paintutils.drawLine(3,16,24,16,colors.white)
-                    term.setCursorPos(3, 16)
-                    term.setTextColor(colors.blue)
                     write(titleTable[scroll])
                 end
             end
 
+            drawList(titleTable, formatTable, scroll)
             local events = {os.pullEvent()}
             if events[1] == "mouse_scroll" then
                 if events[2] == 1 then
@@ -931,12 +916,14 @@ local function downloadPaste()
                         scroll = #titleTable
                     elseif scroll >= 1 and scroll < #titleTable then
                         scroll = scroll + 1
+                        drawList(titleTable, formatTable, scroll)
                     end
                 elseif events[2] == -1 then
                     if scroll <= 1 then
                         scroll = 1
                     elseif scroll >= 1 then
                         scroll = scroll - 1
+                        drawList(titleTable, formatTable, scroll)
                     end
                 end
             elseif events[1] == "key" then
@@ -945,13 +932,23 @@ local function downloadPaste()
                         scroll = #titleTable
                     elseif scroll >= 1 and scroll < #titleTable then
                         scroll = scroll + 1
+                        drawList(titleTable, formatTable, scroll)
                     end
                 elseif events[2] == 200 then
                     if scroll <= 1 then
                         scroll = 1
                     elseif scroll >= 1 then
                         scroll = scroll - 1
+                        drawList(titleTable, formatTable, scroll)
                     end
+                end
+            elseif events[1] == "char" then
+                for i = 1, #titleTable do
+                    if string.lower(string.sub(titleTable[i], 1, 1)) == events[2] then
+                        scroll = i
+                        break
+                    end
+                    drawList(titleTable, formatTable, scroll)
                 end
             elseif events[1] == "mouse_click" and events[2] == 1 then
                 if events[3] >= 28 and events[3] <= 49 and events[4] == 16 then
@@ -1137,6 +1134,38 @@ local function downloadPaste()
 end
 
 local function newPaste()
+    local optsTab = {
+        "Syntax highlighting:",
+        "Paste expiration:",
+        "Paste exposure:",
+        "Show hidden files:"
+        }
+    local expiryTab = {
+        "Never",
+        "10 minutes",
+        "1 hour",
+        "1 day",
+        "1 month"
+        }
+    local expTabList = {
+        'N',
+        '10M',
+        '1H',
+        '1D',
+        '1M'
+        }
+    local exposureTab = {
+        "Public",
+        "Private",
+        "Unlisted"
+        }
+    local scroll = 1
+    local synOpt = 128
+    local expOpt = 1
+    local pubOpt = 1
+    local dirTab = {""}
+    local hidden = false
+
     for i = 3, y do
         paintutils.drawLine(1,i,x,i,colors.lightBlue)
     end
@@ -1150,6 +1179,13 @@ local function newPaste()
     write("File Size")
     for k = 14, y do
         paintutils.drawLine(2,k,50,k,colors.lightGray)
+    end
+    for i = 1, 4 do
+        term.setTextColor(colors.black)
+        term.setBackgroundColor(colors.lightGray)
+        paintutils.drawLine(2, 14 + i, 50, 14 + i, colors.lightGray)
+        term.setCursorPos(3, 14 + i)
+        write(optsTab[i])
     end
     
     local function getFiles(dir, hidden)
@@ -1166,12 +1202,6 @@ local function newPaste()
         return rTab
     end
 
-    local scroll = 1
-    local synOpt = 128
-    local expOpt = 1
-    local pubOpt = 1
-    local dirTab = {""}
-    local hidden = false
     while true do
         local listTable = getFiles(table.concat(dirTab, "/"), hidden)
         local typeTable = {}
@@ -1192,86 +1222,101 @@ local function newPaste()
         table.insert(typeTable, 1, "")
         table.insert(sizeTable, 1, "")
         
-        local optsTab = {
-            "Syntax highlighting:",
-            "Paste expiration:",
-            "Paste exposure:",
-            "Show hidden files:"
-            }
-        local expiryTab = {
-            "Never",
-            "10 minutes",
-            "1 hour",
-            "1 day",
-            "1 month"
-            }
-        local expTabList = {
-            'N',
-            '10M',
-            '1H',
-            '1D',
-            '1M'
-            }
-        local exposureTab = {
-            "Public",
-            "Private",
-            "Unlisted"
-            }
-        for i = 1,8 do
-            if i > #listTable then break end
+        -- list files on computer
+        local function drawList(dirTab, listTable, scroll)
             if scroll <= 8 then
-                paintutils.drawLine(1,i + 4,x,i + 4,colors.lightBlue)
-                term.setCursorPos(1, 4 + i)
-                term.setBackgroundColor(colors.lightBlue)
-                term.setTextColor(colors.white)
-                if fs.isDir(table.concat(dirTab, "/").."/"..listTable[i]) then
-                    term.setTextColor(colors.lime)
-                    write(" "..listTable[i])
-                elseif listTable[i] == "Return" then
-                    term.setTextColor(colors.green)
-                    write(" "..listTable[i])
-                else
-                    term.setTextColor(colors.white)
-                    write(" "..listTable[i])
+                for i = 1, 8 do
+                    if i > #listTable then break end
+                    term.setBackgroundColor(colors.lightBlue)
+                    term.setCursorPos(1, 4 + i)
+                    if fs.isDir(table.concat(dirTab, "/").."/"..listTable[i]) then
+                        term.setTextColor(colors.lime)
+                    elseif listTable[i] == "Return" then
+                        term.setTextColor(colors.green)
+                    else
+                        term.setTextColor(colors.white)
+                    end
+                    if string.len(listTable[i]) >= 17 then
+                        write(" "..string.sub(listTable[i], 1, 14).."...") 
+                    else
+                        write(" "..listTable[i])
+                    end
+                    local mX,mY = term.getCursorPos()
+                    for i = 1, 19 - mX do
+                        write(" ")
+                    end
+                    write(typeTable[i])
+                    local mX,mY = term.getCursorPos()
+                    for i = 1, 30 - mX do
+                        write(" ")
+                    end
+                    write(sizeTable[i])
+                    local mX,mY = term.getCursorPos()
+                    for i = 1, 50 - mX do
+                        write(" ")
+                    end
                 end
-                term.setCursorPos(19,4 + i)
-                write(typeTable[i])
-                term.setCursorPos(30,4 + i)
-                write(sizeTable[i])
                 term.setCursorPos(1, 4 + scroll)
                 term.setTextColor(colors.red)
-                write(">"..listTable[scroll])
-            else
-                paintutils.drawLine(1,i + 4,x,i + 4,colors.lightBlue)
-                term.setCursorPos(1, 4 + i)
-                term.setBackgroundColor(colors.lightBlue)
-                if fs.isDir(table.concat(dirTab, "/").."/"..listTable[scroll + (i - 8)]) then
-                    term.setTextColor(colors.lime)
-                    write(" "..listTable[scroll + (i - 8)])
-                elseif listTable[scroll + (i - 8)] == "Return" then
-                    term.setTextColor(colors.green)
-                    write(" "..listTable[i])
+                if string.len(listTable[scroll]) >= 17 then
+                    write(">"..string.sub(listTable[scroll], 1, 14).."...")
                 else
-                    term.setTextColor(colors.white)
-                    write(" "..listTable[scroll + (i - 8)])
+                    write(">"..listTable[scroll])
                 end
-                term.setCursorPos(19, 4 + i)
-                write(typeTable[scroll + (i - 8)])
-                term.setCursorPos(30, 4 + i)
-                write(sizeTable[scroll + (i - 8)])
+                local mX,mY = term.getCursorPos()
+                for i = 1, 19 - mX do
+                    write(" ")
+                end
+            else
+                for i = 1, 8 do
+                    if i > #listTable then break end
+                    term.setBackgroundColor(colors.lightBlue)
+                    term.setCursorPos(1, 4 + i)
+                    if fs.isDir(table.concat(dirTab, "/").."/"..listTable[scroll + (i - 8)]) then
+                        term.setTextColor(colors.lime)
+                    elseif listTable[scroll + (i - 8)] == "Return" then
+                        term.setTextColor(colors.green)
+                    else
+                        term.setTextColor(colors.white)
+                    end
+                    if string.len(listTable[scroll + (i - 8)]) >= 17 then
+                        write(" "..string.sub(listTable[scroll + (i - 8)], 1, 14).."...") 
+                    else
+                        write(" "..listTable[scroll + (i - 8)])
+                    end
+                    local mX,mY = term.getCursorPos()
+                    for i = 1, 19 - mX do
+                        write(" ")
+                    end
+                    write(typeTable[scroll + (i - 8)])
+                    local mX,mY = term.getCursorPos()
+                    for i = 1, 30 - mX do
+                        write(" ")
+                    end
+                    write(sizeTable[scroll + (i - 8)])
+                    local mX,mY = term.getCursorPos()
+                    for i = 1, 50 - mX do
+                        write(" ")
+                    end
+                end
                 term.setCursorPos(1, 12)
                 term.setTextColor(colors.red)
-                write(">"..listTable[scroll])
+                if string.len(listTable[scroll]) >= 17 then
+                    write(">"..string.sub(listTable[scroll], 1, 14).."...")
+                else
+                    write(">"..listTable[scroll])
+                end
+                local mX,mY = term.getCursorPos()
+                for i = 1, 19 - mX do
+                    write(" ")
+                end
             end
         end
-        for i = 1, #optsTab do
-            term.setTextColor(colors.black)
-            term.setBackgroundColor(colors.lightGray)
-            paintutils.drawLine(2, 14 + i, 50, 14 + i, colors.lightGray)
-            term.setCursorPos(3, 14 + i)
-            write(optsTab[i])
+    drawList(dirTab, listTable, scroll)
+        for i = 1, 4 do
             term.setCursorPos(24, 14 + i)
             term.setTextColor(colors.white)
+            term.setBackgroundColor(colors.lightGray)
             write(
                 i == 1 and syntaxTab.menuNames[synOpt] or
                 i == 2 and expiryTab[expOpt] or
@@ -1279,6 +1324,10 @@ local function newPaste()
                 i == 4 and hidden and "[X]" or
                 i == 4 and not hidden and "[ ]"
                 )
+            local mX, mY = term.getCursorPos()
+            for i = 1, 50 - mX do
+                write(" ")
+            end
         end
 
         local function drawMiniMenu(menuType, menuTable)
@@ -1350,6 +1399,13 @@ local function newPaste()
                             scroll = scroll - 1
                         end
                     end
+                elseif events[1] == "char" then
+                    for i = 1, #syntaxTab.menuNames do
+                        if string.lower(string.sub(syntaxTab.menuNames[i], 1, 1)) == events[2] then
+                            scroll = i
+                            break
+                        end
+                    end
                 elseif events[1] == "key" then
                     if events[2] == 208 then
                         if scroll >= menuNum - 6 then
@@ -1370,9 +1426,9 @@ local function newPaste()
                                 break
                             end
                         end
-            for i = 5, 12 do
-                paintutils.drawLine(2, i, 50, i, colors.lightBlue)
-            end
+                        for i = 5, 12 do
+                            paintutils.drawLine(2, i, 50, i, colors.lightBlue)
+                        end
                         return selectedNum
                     end
                 elseif events[1] == "mouse_click" and events[2] == 1 then
@@ -1406,12 +1462,14 @@ local function newPaste()
                     scroll = #listTable
                 elseif scroll >= 1 and scroll < #listTable then
                     scroll = scroll + 1
+                    drawList(dirTab, listTable, scroll)
                 end
             elseif events[2] == -1 then
                 if scroll <= 1 then
                     scroll = 1
                 elseif scroll >= 1 then
                     scroll = scroll - 1
+                    drawList(dirTab, listTable, scroll)
                 end
             end
         elseif events[1] == "key" then
@@ -1420,12 +1478,14 @@ local function newPaste()
                     scroll = #listTable
                 elseif scroll >= 1 and scroll < #listTable then
                     scroll = scroll + 1
+                    drawList(dirTab, listTable, scroll)
                 end
             elseif events[2] == 200 then
                 if scroll <= 1 then
                     scroll = 1
                 elseif scroll >= 1 then
                     scroll = scroll - 1
+                    drawList(dirTab, listTable, scroll)
                 end
             elseif events[2] == 28 then
                 if scroll == 1 and dir ~= "/" then
@@ -1520,6 +1580,14 @@ local function newPaste()
                     end
                 end
             end
+        elseif events[1] == "char" then
+            for i = 1, #listTable do
+                if string.lower(string.sub(listTable[i], 1, 1)) == events[2] then
+                    scroll = i
+                    break
+                end
+                drawList(dirTab, listTable, scroll)
+            end
         elseif events[1] == "mouse_click" and events[2] == 1 then
             if events[4] == 15 then
                 if events[3] >= 24 and events[3] <= 48 then
@@ -1613,7 +1681,10 @@ buttons = {
     x2 = 49,
     y = 2},
     {name = "X",
-    action = function()
+    action = fWolf and function()
+                sleep(0)
+            end or
+            function()
                 os.queueEvent("terminate")
             end,
     color = colors.white,
@@ -1658,14 +1729,6 @@ function background()
         write(buttons[i].name)
         term.setBackgroundColor(colors.black)
     end
-    local logo = fWolf and loadImageFromServer("logo") or paintutils.loadImage("logo")
-    paintutils.drawImage(logo, 3, 3)
-    for i = 1, #logoTab do
-        term.setCursorPos(22, i + 5)
-        term.setTextColor(fWolf and colors.orange or colors.blue)
-        term.setBackgroundColor(colors.black)
-        write(logoTab[i])
-    end
     if fWolf then
         term.setCursorPos(25,17)
         term.setTextColor(colors.white)
@@ -1676,6 +1739,13 @@ function background()
         term.setBackgroundColor(colors.lightGray)
         term.setTextColor(colors.black)
         write("Logout")
+    end
+    paintutils.drawImage(logo, 3, fWolf and 4 or 3)
+    for i = 1, #logoTab do
+        term.setCursorPos(22, i + 5)
+        term.setTextColor(fWolf and colors.orange or colors.blue)
+        term.setBackgroundColor(colors.black)
+        write(logoTab[i])
     end
 end
 
