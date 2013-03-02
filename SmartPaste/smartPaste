@@ -954,7 +954,7 @@ local function downloadPaste()
                 if events[3] >= 28 and events[3] <= 49 and events[4] == 16 then
                     paintutils.drawLine(28,16,49,16,colors.white)
                     term.setCursorPos(29,16)
-                    local DLcode = read()
+                    DLcode = read()
                 elseif events[3] >= 35 and events[3] <= 42 and events[4] == 18 then
                     if DLcode ~= "" and DLcode ~= nil then
                         local DLcontent = http.get("http://pastebin.com/raw.php?i="..DLcode)
@@ -992,6 +992,7 @@ local function downloadPaste()
                                 term.setTextColor(colors.red)
                                 write("Download Successful!")
                                 sleep(1)
+                                DLcode = false
                             else
                                 print("FILE EXISTS!")
                                 sleep(5)
@@ -1034,6 +1035,7 @@ local function downloadPaste()
                             term.setTextColor(colors.red)
                             write("Download Successful!")
                             sleep(1)
+                            DLcode = false
                         else
                             print("FILE EXISTS!")
                             sleep(5)
@@ -1342,8 +1344,8 @@ local function newPaste()
             end
             local menuNum = 0
             local scroll = menuType == "syntax" and 127 or 0
-            local selected = menuType == "syntax" and menuTable[scroll + 1] or menuTable[1]
             while true do
+                local selected = menuType == "syntax" and menuTable[scroll + 1] or menuTable[scroll + 1]
                 if menuType == "syntax" then
                     menuNum = #menuTable
                     for i = 1, 6 do
@@ -1357,32 +1359,17 @@ local function newPaste()
                         term.setTextColor(colors.blue)
                         write(menuTable[scroll + i])
                     end
-                elseif menuType == "expiration" then
+                elseif menuType == "expiration" or menuType == "exposure" then
                     menuNum = #menuTable
-                    for i = 1, #menuTable do
-                        paintutils.drawLine(12, i + 5, 36, i + 5, colors.white)
+                    for i = 1, menuNum do
                         term.setCursorPos(12, i + 5)
-                        if selected == menuTable[scroll + i] then
-                            term.setBackgroundColor(colors.lightGray)
-                        else
-                            term.setBackgroundColor(colors.white)
-                        end
+                        term.setBackgroundColor(colors.white)
                         term.setTextColor(colors.blue)
-                        write(menuTable[scroll + i])
+                        write(menuTable[i])
                     end
-                elseif menuType == "exposure" then
-                    menuNum = #menuTable
-                    for i = 1, #menuTable do
-                        paintutils.drawLine(12, i + 5, 36, i + 5, colors.white)
-                        term.setCursorPos(12, i + 5)
-                        if selected == menuTable[scroll + i] then
-                            term.setBackgroundColor(colors.lightGray)
-                        else
-                            term.setBackgroundColor(colors.white)
-                        end
-                        term.setTextColor(colors.blue)
-                        write(menuTable[scroll + i])
-                    end
+                    term.setCursorPos(12, scroll + 6)
+                    term.setBackgroundColor(colors.lightGray)
+                    write(menuTable[scroll + 1])
                 end
                 local events = {os.pullEvent()}
                 if events[1] == "mouse_scroll" and menuType == "syntax" then
@@ -1408,17 +1395,9 @@ local function newPaste()
                     end
                 elseif events[1] == "key" then
                     if events[2] == 208 then
-                        if scroll >= menuNum - 6 then
-                            scroll = menuNum - 6
-                        else
-                            scroll = scroll + 1
-                        end
+                        scroll = scroll + 1
                     elseif events[2] == 200 then
-                        if scroll <= 0 then
-                            scroll = 0
-                        else
-                            scroll = scroll - 1
-                        end
+                        scroll = scroll - 1
                     elseif events[2] == 28 then
                         for i = 1, #menuTable do
                             if selected == menuTable[i] then
@@ -1448,9 +1427,15 @@ local function newPaste()
                         for i = 6, 11 do
                             if events[4] == i then
                                 selected = menuTable[scroll + (i - 5)]
+                                scroll = i - 6
                             end
                         end
                     end
+                end
+                if scroll >= menuNum then
+                    scroll = menuNum - 1
+                elseif scroll < 0 then
+                    scroll = 0
                 end
             end
         end
@@ -1645,12 +1630,13 @@ buttons = {
     y = 2},
     {name = fWolf and "Home" or "",
     action = fWolf and function()
+                term.clear = oldTerm
                 redirect("home")
             end or
             function()
-        if checkCode() then
+                if checkCode() then
                     unlock()
-        end
+                end
             end,
     color = colors.black,
     BGcolor = colors.lightGray,
@@ -1710,8 +1696,14 @@ local logoTab = {
 function background()
     term.setBackgroundColor(colors.black)
     term.setTextColor(colors.white)
-    term.clear()
+    if fWolf then
+        os.pullEvent, term = hideBar()
+        term.clear()
+    else
+        term.clear()
+    end
     term.setCursorPos(1,1)
+    if fWolf then hideBar() end
     term.setTextColor(colors.white)
     term.setBackgroundColor(colors.blue)
     write(logged and "SmartPaste - "..username or "SmartPaste")
@@ -1740,7 +1732,7 @@ function background()
         term.setTextColor(colors.black)
         write("Logout")
     end
-    paintutils.drawImage(logo, 3, fWolf and 4 or 3)
+    paintutils.drawImage(logo, 3, 3)
     for i = 1, #logoTab do
         term.setCursorPos(22, i + 5)
         term.setTextColor(fWolf and colors.orange or colors.blue)
@@ -1750,7 +1742,6 @@ function background()
 end
 
 -- Main menu navigation system
-
 background()
 while true do
     local events = {os.pullEventRaw()}
@@ -1772,7 +1763,12 @@ while true do
     elseif events[1] == "terminate" then
         term.setBackgroundColor(colors.black)
         term.setTextColor(colors.white)
-        term.clear()
+        if fWolf then
+            os.pullEvent, term = showBar()
+            term.clear()
+        else
+            term.clear()
+        end
         term.setCursorPos(1,1)
         print("Thank you for using SmartPaste!")
         return
