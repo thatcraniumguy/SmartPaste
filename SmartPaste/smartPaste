@@ -826,6 +826,7 @@ local function downloadPaste()
                 if scroll <= 8 then
                     for i = 1, 8 do
                         if i > #titleTable then break end
+                        if titleTable[1] == nil then break end
                         term.setBackgroundColor(colors.lightBlue)
                         term.setCursorPos(1, 4 + i)
                         term.setTextColor(colors.white)
