@@ -741,7 +741,7 @@ local function downloadPaste()
         end
         term.setCursorPos(15,10)
         term.setTextColor(colors.blue)
-        write("Retreiving posts for:")
+        write("Retrieving posts for:")
         local cX = (x/2)-(string.len(username)/2)
         term.setCursorPos(cX,11)
         term.setTextColor(colors.red)
@@ -789,6 +789,17 @@ local function downloadPaste()
             elseif private == "2" then
                 table.insert(privTable, "Private")
             end
+        end
+
+        if not codeTable[1] then
+            for i = 9, 12 do
+                paintutils.drawLine(10,i,40,i,colors.white)
+            end
+            term.setCursorPos(18, 10)
+            term.setTextColor(colors.red)
+            write("No pastes found!")
+            sleep(1)
+            return
         end
 
         term.setBackgroundColor(colors.lightBlue)
@@ -994,9 +1005,17 @@ local function downloadPaste()
                                 write("Download Successful!")
                                 sleep(1)
                                 DLcode = false
+                                for i = 5, 12 do
+                                    paintutils.drawLine(1, i, 50, i, colors.lightBlue)
+                                end
                             else
+                                term.setCursorPos(11,7)
+                                term.setTextColor(colors.red)
                                 print("FILE EXISTS!")
-                                sleep(5)
+                                sleep(1)
+                                for i = 5, 12 do
+                                    paintutils.drawLine(1, i, 50, i, colors.lightBlue)
+                                end
                             end
                         end
                     end
@@ -1037,9 +1056,17 @@ local function downloadPaste()
                             write("Download Successful!")
                             sleep(1)
                             DLcode = false
+                            for i = 5, 12 do
+                                paintutils.drawLine(1, i, 50, i, colors.lightBlue)
+                            end
                         else
+                            term.setCursorPos(11,7)
+                            term.setTextColor(colors.red)
                             print("FILE EXISTS!")
-                            sleep(5)
+                            sleep(1)
+                            for i = 5, 12 do
+                                paintutils.drawLine(1, i, 50, i, colors.lightBlue)
+                            end
                         end
                     end
                 elseif events[4] == 2 then
