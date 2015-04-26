@@ -392,7 +392,7 @@ local function unlock()
             {"Unknown voice 1: The user has found the",
              "    backdoor. Shall I terminate the connection",
              "    to the server?"},
-            {"Unknown voice 2: No. Their dilligence has paid",
+            {"Unknown voice 2: No. Their diligence has paid",
              "    off. Give them more tests. Scatter them",
              "    throughout cyberspace. Let's see if they",
              "    can find all of the clues."},
